@@ -690,6 +690,33 @@ CONTAINS
           qxz(ix,iy,iz) = qxz(ix,iy,iz) + 2.0_num * bsxz
           qyz(ix,iy,iz) = qyz(ix,iy,iz) + 2.0_num * bsyz
 #endif
+
+#ifdef SWITCHING_VISCOSITY
+          mB2 = bx1(ix, iy, iz)**2 + by1(ix, iy, iz)**2 + bz1(ix, iy, iz)**2
+
+          btxx = bx1(ix, iy, iz)**2
+          btyy = by1(ix, iy, iz)**2
+          btzz = bz1(ix, iy, iz)**2
+          btxy = bx1(ix, iy, iz)*by1(ix, iy, iz)
+          btxz = bx1(ix, iy, iz)*bz1(ix, iy, iz)
+          btyz = by1(ix, iy, iz)*bz1(ix, iy, iz)
+          
+          wbdotb = &
+              (bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
+            + (bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
+            + (bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
+
+          a0 = 1
+          a = a0*mB2
+          s = ?
+
+          bsxx = n0*((1-s**2)*sxx + s**2/mB2**2*wbdotb*(3*btxx - mB2)/2.0_num)
+          bsxy = n0*((1-s**2)*sxy + s**2/mB2**2*wbdotb*(3*btxy - mB2)/2.0_num)
+          bsxz = n0*((1-s**2)*sxz + s**2/mB2**2*wbdotb*(3*btxz - mB2)/2.0_num)
+          bsyy = n0*((1-s**2)*syy + s**2/mB2**2*wbdotb*(3*btyy - mB2)/2.0_num)
+          bsyz = n0*((1-s**2)*syz + s**2/mB2**2*wbdotb*(3*btyz - mB2)/2.0_num)
+          bszz = n0*((1-s**2)*szz + s**2/mB2**2*wbdotb*(3*btzz - mB2)/2.0_num)
+#endif
         END DO
       END DO
     END DO
