@@ -152,7 +152,7 @@ DEFINES := $(DEFINE)
 #DEFINES += $(D)MPI_DEBUG
 
 # Uncomment to include anisotropic braginskii viscosity
-DEFINES += $(D)BRAGINSKII_VISCOSITY
+#DEFINES += $(D)BRAGINSKII_VISCOSITY
 
 # Uncomment to include anisotropic switching viscosity
 #DEFINES += $(D)SWITCHING_VISCOSITY
