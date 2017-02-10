@@ -236,6 +236,8 @@ CONTAINS
 
   SUBROUTINE velocity_bcs
 
+    REAL(num) :: v
+
     CALL velocity_mpi
 
     IF (proc_x_min == MPI_PROC_NULL .AND. xbc_min == BC_OTHER) THEN
@@ -262,15 +264,41 @@ CONTAINS
       vz(:,ny:ny+2,:) = 0.0_num
     END IF
 
+    twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
+
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      vx(:,:,-2:0) = 0.0_num
-      vy(:,:,-2:0) = 0.0_num
+      DO iy = 0, ny
+        DO ix = 0, nx
+          x = x_min + ix/nx*(x_max - xmin)
+          y = y_min + iy/ny*(y_max - ymin)
+          r = SQRT(x**2 + y**2)
+
+          ! If r < 1
+          in_circle_flag = r - 1.0_num
+          in_circle_flag = (SIGN(1.0_num, in_circle_flag) + 1.0_num) * 0.5_num
+          
+          vx(ix,iy,-2:0) = -twist*x*SIN(pi*r)/r*in_circle_flag
+          vy(ix,iy,-2:0) =  twist*y*SIN(pi*r)/r*in_circle_flag
+        END DO
+      END DO
       vz(:,:,-2:0) = 0.0_num
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      vx(:,:,nz:nz+2) = 0.0_num
-      vy(:,:,nz:nz+2) = 0.0_num
+      DO iy = 0, ny
+        DO ix = 0, nx
+          x = x_min + ix/nx*(x_max - xmin)
+          y = y_min + iy/ny*(y_max - ymin)
+          r = SQRT(x**2 + y**2)
+
+          ! If r < 1
+          in_circle_flag = r - 1.0_num
+          in_circle_flag = (SIGN(1.0_num, in_circle_flag) + 1.0_num) * 0.5_num
+          
+          vx(ix,iy,nz:nz+2) =  twist*x*SIN(pi*r)/r*in_circle_flag
+          vy(ix,iy,nz:nz+2) = -twist*y*SIN(pi*r)/r*in_circle_flag
+        END DO
+      END DO
       vz(:,:,nz:nz+2) = 0.0_num
     END IF
 
@@ -283,6 +311,8 @@ CONTAINS
   !****************************************************************************
 
   SUBROUTINE remap_v_bcs
+
+    REAL(num) :: x, y, r, twist, in_circle_flag
 
     CALL remap_v_mpi
 
@@ -310,17 +340,43 @@ CONTAINS
       vz1(:,ny:ny+2,:) = 0.0_num
     END IF
 
+    twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
+
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      vx1(:,:,-2:0) = 0.0_num
-      vy1(:,:,-2:0) = 0.0_num
-      vz1(:,:,-2:0) = 0.0_num
+      DO iy = 0, ny
+        DO ix = 0, nx
+          x = x_min + ix/nx*(x_max - xmin)
+          y = y_min + iy/ny*(y_max - ymin)
+          r = SQRT(x**2 + y**2)
+
+          ! If r < 1
+          in_circle_flag = r - 1.0_num
+          in_circle_flag = (SIGN(1.0_num, in_circle_flag) + 1.0_num) * 0.5_num
+          
+          vx(ix,iy,-2:0) = -twist*x*SIN(pi*r)/r*in_circle_flag
+          vy(ix,iy,-2:0) =  twist*y*SIN(pi*r)/r*in_circle_flag
+        END DO
+      END DO
+      vz(:,:,-2:0) = 0.0_num
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      vx1(:,:,nz:nz+2) = 0.0_num
-      vy1(:,:,nz:nz+2) = 0.0_num
-      vz1(:,:,nz:nz+2) = 0.0_num
-    END IF
+      DO iy = 0, ny
+        DO ix = 0, nx
+          x = x_min + ix/nx*(x_max - xmin)
+          y = y_min + iy/ny*(y_max - ymin)
+          r = SQRT(x**2 + y**2)
+
+          ! If r < 1
+          in_circle_flag = r - 1.0_num
+          in_circle_flag = (SIGN(1.0_num, in_circle_flag) + 1.0_num) * 0.5_num
+          
+          vx(ix,iy,nz:nz+2) =  twist*x*SIN(pi*r)/r*in_circle_flag
+          vy(ix,iy,nz:nz+2) = -twist*y*SIN(pi*r)/r*in_circle_flag
+        END DO
+      END DO
+      vz(:,:,nz:nz+2) = 0.0_num
+    END IFF
 
   END SUBROUTINE remap_v_bcs
 
