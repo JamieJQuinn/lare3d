@@ -25,7 +25,7 @@ CONTAINS
     ! in SI units
 
     ! Gamma is the ratio of specific heat capacities
-    gamma = 1.4_num
+    gamma = 1.6666667_num
 
     ! Average mass of an ion in proton masses
     ! The code assumes a single ion species with this mass
@@ -56,13 +56,13 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 64
-    ny_global = 64
-    nz_global = 64
+    nx_global = 300
+    ny_global = 300
+    nz_global = 300
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
-    nsteps = 1
+    nsteps = -1
 
     ! The maximum runtime of the code
     t_end = 10.0_num
@@ -82,28 +82,28 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = 0.0_num
-    x_max = 100.0_num
+    x_min = -3.0_num
+    x_max = 3.0_num
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = 0.0_num
-    y_max = 100.0_num
+    y_min = -3.0_num
+    y_max = 3.0_num
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -20.0_num
-    z_max = 80.0_num
+    z_min = -3.0_num
+    z_max = 3.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
     ! Turn on or off the resistive parts of the MHD equations
-    resistive_mhd = .FALSE.
+    resistive_mhd = .TRUE.
 
     ! The background resistivity expressed as the inverse Lundquist number
-    eta_background = 0.0_num
+    eta_background = 0.0001_num
 
     ! The critical current for triggering anomalous resistivity
     ! and the resistivity when above the critical current.
@@ -155,10 +155,10 @@ CONTAINS
     ! BC_PERIODIC - Periodic boundary conditions
     ! BC_OPEN     - Reimann far-field characteristic boundary conditions
     ! BC_OTHER    - Other boundary conditions specified in "boundary.f90"
-    xbc_min = BC_PERIODIC
-    xbc_max = BC_PERIODIC
-    ybc_min = BC_PERIODIC
-    ybc_max = BC_PERIODIC
+    xbc_min = BC_OTHER
+    xbc_max = BC_OTHER
+    ybc_min = BC_OTHER
+    ybc_max = BC_OTHER
     zbc_min = BC_OTHER
     zbc_max = BC_OTHER
 
@@ -195,7 +195,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 10.0_num
+    dt_snapshots = 1.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
