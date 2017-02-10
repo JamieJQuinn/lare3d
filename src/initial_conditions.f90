@@ -32,8 +32,6 @@ CONTAINS
     ! used here as it covers including gravity and neutrals.
     ! The normalisation assumed is that from the defauls control.f90
 
-    INTEGER :: loop
-    INTEGER :: ix, iy, iz
     REAL(num) :: x, y, z
 
     vx = 0.0_num
@@ -43,9 +41,9 @@ CONTAINS
     DO iz = -1, nz + 2
       DO iy = -1, ny + 2
         DO ix = -1, nx + 2
-          x = x_min + ix/nx*(x_max - xmin)
-          y = y_min + iy/ny*(y_max - ymin)
-          z = z_min + iz/nz*(z_max - zmin)
+          x = x_min + REAL(ix, num)/nx*(x_max - x_min)
+          y = y_min + REAL(iy, num)/ny*(y_max - y_min)
+          z = z_min + REAL(iz, num)/nz*(z_max - z_min)
           rho(ix,iy,iz) = RHO0
           energy(ix,iy,iz) = 0.0_num
           bx(ix,iy,iz) = x

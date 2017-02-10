@@ -195,7 +195,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 1.0_num
+    dt_snapshots = 0.5_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.

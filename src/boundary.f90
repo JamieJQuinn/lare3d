@@ -236,7 +236,7 @@ CONTAINS
 
   SUBROUTINE velocity_bcs
 
-    REAL(num) :: v
+    REAL(num) :: x, y, r, twist, in_circle_flag
 
     CALL velocity_mpi
 
@@ -269,8 +269,8 @@ CONTAINS
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = 0, ny
         DO ix = 0, nx
-          x = x_min + ix/nx*(x_max - xmin)
-          y = y_min + iy/ny*(y_max - ymin)
+          x = x_min + REAL(ix, num)/nx*(x_max - x_min)
+          y = y_min + REAL(iy, num)/ny*(y_max - y_min)
           r = SQRT(x**2 + y**2)
 
           ! If r < 1
@@ -287,8 +287,8 @@ CONTAINS
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
       DO iy = 0, ny
         DO ix = 0, nx
-          x = x_min + ix/nx*(x_max - xmin)
-          y = y_min + iy/ny*(y_max - ymin)
+          x = x_min + REAL(ix, num)/nx*(x_max - x_min)
+          y = y_min + REAL(iy, num)/ny*(y_max - y_min)
           r = SQRT(x**2 + y**2)
 
           ! If r < 1
@@ -345,8 +345,8 @@ CONTAINS
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = 0, ny
         DO ix = 0, nx
-          x = x_min + ix/nx*(x_max - xmin)
-          y = y_min + iy/ny*(y_max - ymin)
+          x = x_min + REAL(ix, num)/nx*(x_max - x_min)
+          y = y_min + REAL(iy, num)/ny*(y_max - y_min)
           r = SQRT(x**2 + y**2)
 
           ! If r < 1
@@ -363,8 +363,8 @@ CONTAINS
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
       DO iy = 0, ny
         DO ix = 0, nx
-          x = x_min + ix/nx*(x_max - xmin)
-          y = y_min + iy/ny*(y_max - ymin)
+          x = x_min + REAL(ix, num)/nx*(x_max - x_min)
+          y = y_min + REAL(iy, num)/ny*(y_max - y_min)
           r = SQRT(x**2 + y**2)
 
           ! If r < 1
@@ -376,7 +376,7 @@ CONTAINS
         END DO
       END DO
       vz(:,:,nz:nz+2) = 0.0_num
-    END IFF
+    END IF
 
   END SUBROUTINE remap_v_bcs
 

@@ -650,6 +650,7 @@ CONTAINS
           !n1 = n2*2*SQRT(mB2)
 
           ! Approximate physically motivated values for n1, n2
+          n0 = 1e-4
           xi = 10**5
           delta = 2.23 + 4.03*xi**2 + xi**4
           n2 = n0/delta*(6/5*xi*2 + 2.23)
