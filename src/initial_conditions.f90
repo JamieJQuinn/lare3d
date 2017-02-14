@@ -33,6 +33,11 @@ CONTAINS
     vx = 0.0_num
     vy = 0.0_num
     vz = 0.0_num
+    bx = 0.0_num
+    by = 0.0_num
+    bz = 0.0_num
+    rho = 1.0_num
+    energy = 1.0_num
 
     DO iz = -1, nz + 2
       DO iy = -1, ny + 2
@@ -40,8 +45,6 @@ CONTAINS
           x = x_min + REAL(ix, num)/nx*(x_max - x_min)
           y = y_min + REAL(iy, num)/ny*(y_max - y_min)
           z = z_min + REAL(iz, num)/nz*(z_max - z_min)
-          rho(ix,iy,iz) = 1.0_num
-          energy(ix,iy,iz) = 1.0_num
           bx(ix,iy,iz) = x
           by(ix,iy,iz) = y
           bz(ix,iy,iz) = -2.0_num*z

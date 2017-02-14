@@ -25,7 +25,7 @@ CONTAINS
     ! in SI units
 
     ! Gamma is the ratio of specific heat capacities
-    gamma = 1.6666667_num
+    gamma = 5.0_num/3.0_num
 
     ! Average mass of an ion in proton masses
     ! The code assumes a single ion species with this mass
@@ -62,7 +62,7 @@ CONTAINS
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
-    nsteps = 10
+    nsteps = -1 
 
     ! The maximum runtime of the code
     t_end = 10.0_num
@@ -223,7 +223,7 @@ CONTAINS
     ! If the element is false then the field isn't dumped
     ! N.B. if dump_mask(1:8) not true then the restart will not work
     dump_mask = .FALSE.
-    dump_mask(6:8) = .TRUE.
+    dump_mask(1:10) = .TRUE.
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
