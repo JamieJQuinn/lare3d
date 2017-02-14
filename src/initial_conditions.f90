@@ -28,10 +28,6 @@ CONTAINS
 
   SUBROUTINE set_initial_conditions
 
-    ! This is about the most complicated example for initial conditions
-    ! used here as it covers including gravity and neutrals.
-    ! The normalisation assumed is that from the defauls control.f90
-
     REAL(num) :: x, y, z
 
     vx = 0.0_num
@@ -44,8 +40,8 @@ CONTAINS
           x = x_min + REAL(ix, num)/nx*(x_max - x_min)
           y = y_min + REAL(iy, num)/ny*(y_max - y_min)
           z = z_min + REAL(iz, num)/nz*(z_max - z_min)
-          rho(ix,iy,iz) = RHO0
-          energy(ix,iy,iz) = 0.0_num
+          rho(ix,iy,iz) = 1.0_num
+          energy(ix,iy,iz) = 1.0_num
           bx(ix,iy,iz) = x
           by(ix,iy,iz) = y
           bz(ix,iy,iz) = -2.0_num*z
