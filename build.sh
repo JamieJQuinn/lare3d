@@ -3,13 +3,16 @@ machine='office'
 braginskii='false'
 output='true'
 defines=''
+mode=''
 
-while getopts "bom:" flag; do
+while getopts "bdom:" flag; do
   case "${flag}" in
 		# Enable braginskii visc
     b) braginskii='true' ;;
 		# Disable output
 		o) output='false' ;;
+    # Enable debug
+    d) mode='debug' ;;
     # Set machine
     m) machine="${OPTARG}" ;;
   esac
@@ -32,4 +35,4 @@ elif [ "$machine" == "office" ]; then
   compiler='gfortran'
 fi
 
-make -j $n_proc COMPILER=$compiler DEFINE="$defines"
+make -j $n_proc COMPILER=$compiler DEFINE="$defines" MODE="$mode"
