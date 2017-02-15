@@ -27,4 +27,4 @@ if [ "$n_proc_arg" != '' ]; then
   n_proc=$n_proc_arg
 fi
 
-time mpiexec -n $n_proc $mpi_opts bin/lare3d
+time mpirun -np $n_proc $mpi_opts bin/lare3d
