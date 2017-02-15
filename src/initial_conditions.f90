@@ -28,8 +28,6 @@ CONTAINS
 
   SUBROUTINE set_initial_conditions
 
-    REAL(num) :: x, y, z
-
     vx = 0.0_num
     vy = 0.0_num
     vz = 0.0_num
@@ -39,17 +37,14 @@ CONTAINS
     rho = 1.0_num
     energy = 1.0_num
 
-    DO iz = -1, nz + 2
-      DO iy = -1, ny + 2
-        DO ix = -1, nx + 2
-          x = x_min + REAL(ix, num)/nx*(x_max - x_min)
-          y = y_min + REAL(iy, num)/ny*(y_max - y_min)
-          z = z_min + REAL(iz, num)/nz*(z_max - z_min)
-          bx(ix,iy,iz) = x
-          by(ix,iy,iz) = y
-          bz(ix,iy,iz) = -2.0_num*z
-        END DO
-      END DO
+    DO ix = -2, nx + 2
+      bx(ix,:,:) = xb(ix)
+    END DO
+    DO iy = -2, ny + 2
+      by(:,iy,:) = yc(iy)
+    END DO
+    DO iz = -2, nz + 2
+      bz(:,:,iz) = -2.0_num*zc(iz)
     END DO
 
   END SUBROUTINE set_initial_conditions
