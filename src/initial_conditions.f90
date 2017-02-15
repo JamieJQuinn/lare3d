@@ -37,13 +37,13 @@ CONTAINS
     rho = 1.0_num
     energy = 1.0_num
 
-    DO ix = -2, nx + 2
+    DO ix = -1, nx + 1
       bx(ix,:,:) = xb(ix)
     END DO
-    DO iy = -2, ny + 2
+    DO iy = -1, ny + 1
       by(:,iy,:) = yc(iy)
     END DO
-    DO iz = -2, nz + 2
+    DO iz = -1, nz + 1
       bz(:,:,iz) = -2.0_num*zc(iz)
     END DO
 
