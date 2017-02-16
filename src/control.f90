@@ -56,13 +56,13 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 300
-    ny_global = 300
-    nz_global = 300
+    nx_global = 200
+    ny_global = 200
+    nz_global = 200
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
-    nsteps = -1 
+    nsteps = -1
 
     ! The maximum runtime of the code
     t_end = 10.0_num
@@ -72,7 +72,7 @@ CONTAINS
     visc2 = 0.5_num
 
     ! Real viscosity expressed as the inverse Reynolds number
-    visc3 = 0.0_num
+    visc3 = 1.0e-4_num
 
     ! Set these constants to manually override the domain decomposition.
     ! If either constant is set to zero then the code will try to automatically
@@ -103,7 +103,7 @@ CONTAINS
     resistive_mhd = .TRUE.
 
     ! The background resistivity expressed as the inverse Lundquist number
-    eta_background = 0.0001_num
+    eta_background = 1.0e-4_num
 
     ! The critical current for triggering anomalous resistivity
     ! and the resistivity when above the critical current.
@@ -219,14 +219,18 @@ CONTAINS
     ! 17 - jx
     ! 18 - jy
     ! 19 - jz
+    ! 20 - isotropic viscous heating
+    ! 21 - anisotropic viscous heating
     ! If a given element of dump_mask is true then that field is dumped
     ! If the element is false then the field isn't dumped
     ! N.B. if dump_mask(1:8) not true then the restart will not work
     dump_mask = .FALSE.
-    dump_mask(1:10) = .TRUE.
+    dump_mask(1:8) = .TRUE.
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
+
+    dump_mask(20) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 
