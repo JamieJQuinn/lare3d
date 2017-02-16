@@ -410,10 +410,12 @@ CONTAINS
     REAL(num) :: fx, fy, fz, dv, s, L, cs, cf, L2
     REAL(num) :: w2_1, w2_2, w2_3
     REAL(num) :: flag1, flag2, flag3, flag4, sg0, dvg0
+    #ifdef BRAGINSKII_VISCOSITY
     REAL(num) :: mB2, xi, delta, n0, n1, n2
     REAL(num) :: wbdotb, a, b, c, d
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
     REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
+    #endif
 
     p_visc = 0.0_num
 
@@ -650,8 +652,8 @@ CONTAINS
           !n1 = n2*2*SQRT(mB2)
 
           ! Approximate physically motivated values for n1, n2
-          n0 = 1e-4
-          xi = 10**5
+          n0 = visc3
+          xi = 1e5
           delta = 2.23 + 4.03*xi**2 + xi**4
           n2 = n0/delta*(6/5*xi*2 + 2.23)
           n1 = n2*2*xi
