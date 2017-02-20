@@ -285,19 +285,7 @@ CONTAINS
       vz(:,ny:ny+2,:) = 0.0_num
     END IF
 
-    !IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      !vx(:,:,-2:0) = 0.0_num
-      !vy(:,:,-2:0) = 0.0_num
-      !vz(:,:,-2:0) = 0.0_num
-    !END IF
-
-    !IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      !vx(:,:,nz:nz+2) = 0.0_num
-      !vy(:,:,nz:nz+2) = 0.0_num
-      !vz(:,:,nz:nz+2) = 0.0_num
-    !END IF
-
-    twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
+    twist = 0.025_num*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = 0, ny
@@ -357,19 +345,7 @@ CONTAINS
       vz1(:,ny:ny+2,:) = 0.0_num
     END IF
 
-    !IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      !vx1(:,:,-2:0) = 0.0_num
-      !vy1(:,:,-2:0) = 0.0_num
-      !vz1(:,:,-2:0) = 0.0_num
-    !END IF
-
-    !IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      !vx1(:,:,nz:nz+2) = 0.0_num
-      !vy1(:,:,nz:nz+2) = 0.0_num
-      !vz1(:,:,nz:nz+2) = 0.0_num
-    !END IF
-
-    twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
+    twist = 0.025_num*(1.0_num + TANH(2.0_num*(time + dt2 - 2.0_num)))
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = 0, ny
