@@ -37,14 +37,14 @@ CONTAINS
     rho = 1.0_num
     energy = 1.0_num
 
-    DO ix = -1, nx + 1
+    DO ix = 0, nx
       bx(ix,:,:) = xb(ix)
     END DO
-    DO iy = -1, ny + 1
-      by(:,iy,:) = yc(iy)
+    DO iy = 0, ny
+      by(:,iy,:) = yb(iy)
     END DO
-    DO iz = -1, nz + 1
-      bz(:,:,iz) = -2.0_num*zc(iz)
+    DO iz = 0, nz
+      bz(:,:,iz) = -2.0_num*zb(iz)
     END DO
 
   END SUBROUTINE set_initial_conditions
