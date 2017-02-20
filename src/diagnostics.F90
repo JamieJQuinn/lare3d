@@ -459,13 +459,13 @@ CONTAINS
     REAL(num) :: dvxy, dvxz, dvyz
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
 
-    DO iz = 1, nz + 1
+    DO iz = 0, nz
       izm = iz - 1
       izp = iz + 1
-      DO iy = 1, ny + 1
+      DO iy = 0, ny
         iym = iy - 1
         iyp = iy + 1
-        DO ix = 1, nx + 1
+        DO ix = 0, nx
           ixm = ix - 1
           ixp = ix + 1
 
@@ -552,7 +552,8 @@ CONTAINS
 
           syz = dvyz * 0.5_num
 
-          heating_array(ix, iy, iz) = 2*visc3*(sxx**2 + syy**2 + szz**2 &
+          ! Heating array is offset, hence ix+1, etc
+          heating_array(ix+1, iy+1, iz+1) = 2*visc3*(sxx**2 + syy**2 + szz**2 &
             + 2*(sxy**2 + sxz**2 + syz**2))
         END DO
       END DO
