@@ -68,8 +68,8 @@ CONTAINS
     t_end = 10.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
-    visc1 = 0.1_num
-    visc2 = 0.5_num
+    visc1 = 0.0_num
+    visc2 = 0.0_num
 
     ! Real viscosity expressed as the inverse Reynolds number
     visc3 = 1.0e-4_num
