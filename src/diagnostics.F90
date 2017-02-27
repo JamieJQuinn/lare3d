@@ -425,13 +425,29 @@ CONTAINS
     END IF
 
     IF (dump_mask(20)) THEN
-      varname = 'isotropic_viscous_heating'
+      varname = 'Isotropic_Viscous_Heating'
       units = 'J/s'
       dims = global_dims + 1
 
       IF (ALLOCATED(array)) DEALLOCATE(array)
       ALLOCATE(array(0:nx,0:ny,0:nz))
-      CALL isotropic_heating(array)
+      CALL calculate_heating(array, .TRUE.)
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Fluid/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_vertex, 'grid', array, &
+          node_distribution, nodeng_subarray, convert)
+      DEALLOCATE(array)
+    END IF
+
+    IF (dump_mask(21)) THEN
+      varname = 'Anisotropic_Viscous_Heating'
+      units = 'J/s'
+      dims = global_dims + 1
+
+      IF (ALLOCATED(array)) DEALLOCATE(array)
+      ALLOCATE(array(0:nx,0:ny,0:nz))
+      CALL calculate_heating(array, .FALSE.)
 
       CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
           'Fluid/' // TRIM(varname), TRIM(units), dims, &
@@ -449,7 +465,8 @@ CONTAINS
 
   END SUBROUTINE write_file
 
-  SUBROUTINE isotropic_heating(heating_array)
+  SUBROUTINE calculate_heating(heating_array, isotropic)
+    LOGICAL :: isotropic
     REAL(num), DIMENSION(:, :, :), intent(out) :: heating_array
 
     REAL(num) :: vxb, vxbm, vyb, vybm, vzb, vzbm
@@ -458,6 +475,13 @@ CONTAINS
     REAL(num) :: dvxdz, dvydz, dvzdz
     REAL(num) :: dvxy, dvxz, dvyz
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
+    REAL(num) :: traceW2
+#ifdef BRAGINSKII_VISCOSITY
+    REAL(num) :: mB2, xi2, brag_visc1, brag_visc2
+    REAL(num) :: a, b, wbdotb, wb2
+#endif
+
+    heating_array = 0.0_num
 
     DO iz = 0, nz
       izm = iz - 1
@@ -552,13 +576,46 @@ CONTAINS
 
           syz = dvyz * 0.5_num
 
-          ! Heating array is offset, hence ix+1, etc
-          heating_array(ix+1, iy+1, iz+1) = 2*visc3*(sxx**2 + syy**2 + szz**2 &
-            + 2*(sxy**2 + sxz**2 + syz**2))
+          IF (isotropic) THEN
+            traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2*(sxy**2 + sxz**2 + syz**2))
+#ifndef BRAGINSKII_VISCOSITY
+#ifndef SWITCHING_VISCOSITY
+            ! Heating array is offset, hence ix+1, etc
+            heating_array(ix+1, iy+1, iz+1) = visc3/2.0_num*traceW2
+#endif
+#endif
+#ifdef BRAGINSKII_VISCOSITY
+            mB2 = bx1(ix, iy, iz)**2 + by1(ix, iy, iz)**2 + bz1(ix, iy, iz)**2
+            xi2 = brag_alpha**2 * mB2
+            brag_visc2 = visc3*(6._num/5._num*xi2 + 2.23_num)/(2.23_num + 4.03_num*xi2 + xi2**2)
+            brag_visc1 = brag_visc2*2*SQRT(mB2)
+
+            heating_array(ix+1, iy+1, iz+1) = brag_visc1/2.0_num*traceW2
+#endif
+          ELSE
+#ifdef BRAGINSKII_VISCOSITY
+            mB2 = bx1(ix, iy, iz)**2 + by1(ix, iy, iz)**2 + bz1(ix, iy, iz)**2
+            xi2 = brag_alpha**2 * mB2
+            brag_visc2 = visc3*(6._num/5._num*xi2 + 2.23_num)/(2.23_num + 4.03_num*xi2 + xi2**2)
+            brag_visc1 = brag_visc2*2*SQRT(mB2)
+            a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(4._num*mB2**2)
+            b = (brag_visc2 - brag_visc1)/(mB2)
+            wbdotb = &
+                2._num*(bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
+              + 2._num*(bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
+              + 2._num*(bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
+            wb2 = &
+                4*(bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)**2 &
+              + 4*(bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)**2 &
+              + 4*(bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)**2
+
+            heating_array(ix+1, iy+1, iz+1) = a*wbdotb**2 + b*wb2
+#endif
+          END IF
         END DO
       END DO
     END DO
-  END SUBROUTINE isotropic_heating
+  END SUBROUTINE calculate_heating
 
   !****************************************************************************
   ! Test whether any of the conditions for doing output on the current
