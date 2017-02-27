@@ -424,6 +424,22 @@ CONTAINS
           node_distribution, nodeng_subarray, convert)
     END IF
 
+    IF (dump_mask(20)) THEN
+      varname = 'isotropic_viscous_heating'
+      units = 'J/s'
+      dims = global_dims + 1
+
+      IF (ALLOCATED(array)) DEALLOCATE(array)
+      ALLOCATE(array(0:nx,0:ny,0:nz))
+      CALL isotropic_heating(array)
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Fluid/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_vertex, 'grid', array, &
+          node_distribution, nodeng_subarray, convert)
+      DEALLOCATE(array)
+    END IF
+
     IF (ALLOCATED(array)) DEALLOCATE(array)
 
     ! Close the file
@@ -433,7 +449,116 @@ CONTAINS
 
   END SUBROUTINE write_file
 
+  SUBROUTINE isotropic_heating(heating_array)
+    REAL(num), DIMENSION(:, :, :), intent(out) :: heating_array
 
+    REAL(num) :: vxb, vxbm, vyb, vybm, vzb, vzbm
+    REAL(num) :: dvxdx, dvydx, dvzdx
+    REAL(num) :: dvxdy, dvydy, dvzdy
+    REAL(num) :: dvxdz, dvydz, dvzdz
+    REAL(num) :: dvxy, dvxz, dvyz
+    REAL(num) :: sxx, syy, szz, sxy, sxz, syz
+
+    DO iz = 0, nz
+      izm = iz - 1
+      izp = iz + 1
+      DO iy = 0, ny
+        iym = iy - 1
+        iyp = iy + 1
+        DO ix = 0, nx
+          ixm = ix - 1
+          ixp = ix + 1
+
+          ! vx at Bx(i,j,k)
+          vxb  = (vx(ix ,iy ,iz ) + vx(ix ,iym,iz ) &
+              +   vx(ix ,iy ,izm) + vx(ix ,iym,izm)) * 0.25_num
+          ! vx at Bx(i-1,j,k)
+          vxbm = (vx(ixm,iy ,iz ) + vx(ixm,iym,iz ) &
+              +   vx(ixm,iy ,izm) + vx(ixm,iym,izm)) * 0.25_num
+          ! vy at By(i,j,k)
+          vyb  = (vy(ix ,iy ,iz ) + vy(ixm,iy ,iz ) &
+              +   vy(ix ,iy ,izm) + vy(ixm,iy ,izm)) * 0.25_num
+          ! vy at By(i,j-1,k)
+          vybm = (vy(ix ,iym,iz ) + vy(ixm,iym,iz ) &
+              +   vy(ix ,iym,izm) + vy(ixm,iym,izm)) * 0.25_num
+          ! vz at Bz(i,j,k)
+          vzb  = (vz(ix ,iy ,iz ) + vz(ixm,iy ,iz ) &
+              +   vz(ix ,iym,iz ) + vz(ixm,iym,iz )) * 0.25_num
+          ! vz at Bz(i,j,k-1)
+          vzbm = (vz(ix ,iy ,izm) + vz(ixm,iy ,izm) &
+              +   vz(ix ,iym,izm) + vz(ixm,iym,izm)) * 0.25_num
+
+          dvxdx = (vxb - vxbm) / dxb(ix)
+          dvydy = (vyb - vybm) / dyb(iy)
+          dvzdz = (vzb - vzbm) / dzb(iz)
+
+          ! vx at By(i,j,k)
+          vxb  = (vx(ix ,iy ,iz ) + vx(ixm,iy ,iz ) &
+              +   vx(ix ,iy ,izm) + vx(ixm,iy ,izm)) * 0.25_num
+          ! vx at By(i,j-1,k)
+          vxbm = (vx(ix ,iym,iz ) + vx(ixm,iym,iz ) &
+              +   vx(ix ,iym,izm) + vx(ixm,iym,izm)) * 0.25_num
+          ! vy at Bx(i,j,k)
+          vyb  = (vy(ix ,iy ,iz ) + vy(ix ,iym,iz ) &
+              +   vy(ix ,iy ,izm) + vy(ix ,iym,izm)) * 0.25_num
+          ! vy at Bx(i-1,j,k)
+          vybm = (vy(ixm,iy ,iz ) + vy(ixm,iym,iz ) &
+              +   vy(ixm,iy ,izm) + vy(ixm,iym,izm)) * 0.25_num
+
+          dvxdy = (vxb - vxbm) / dyb(iy)
+          dvydx = (vyb - vybm) / dxb(ix)
+          dvxy = dvxdy + dvydx
+
+          sxy = dvxy * 0.5_num
+          sxx = (2.0_num * dvxdx - dvydy - dvzdz) * third
+          syy = (2.0_num * dvydy - dvxdx - dvzdz) * third
+          szz = (2.0_num * dvzdz - dvxdx - dvydy) * third
+
+          ! vx at Bz(i,j,k)
+          vxb  = (vx(ix ,iy ,iz ) + vx(ixm,iy ,iz ) &
+              +   vx(ix ,iym,iz ) + vx(ixm,iym,iz )) * 0.25_num
+          ! vx at Bz(i,j,k-1)
+          vxbm = (vx(ix ,iy ,izm) + vx(ixm,iy ,izm) &
+              +   vx(ix ,iym,izm) + vx(ixm,iym,izm)) * 0.25_num
+          ! vz at Bx(i,j,k)
+          vzb  = (vz(ix ,iy ,iz ) + vz(ix ,iym,iz ) &
+              +   vz(ix ,iy ,izm) + vz(ix ,iym,izm)) * 0.25_num
+          ! vz at Bx(i-1,j,k)
+          vzbm = (vz(ixm,iy ,iz ) + vz(ixm,iym,iz ) &
+              +   vz(ixm,iy ,izm) + vz(ixm,iym,izm)) * 0.25_num
+
+          dvxdz = (vxb - vxbm) / dzb(iz)
+          dvzdx = (vzb - vzbm) / dxb(ix)
+          dvxz = dvxdz + dvzdx
+
+          sxz = dvxz * 0.5_num
+
+          ! vy at Bz(i,j,k)
+          vyb  = (vy(ix ,iy ,iz ) + vy(ixm,iy ,iz ) &
+              +   vy(ix ,iym,iz ) + vy(ixm,iym,iz )) * 0.25_num
+          ! vy at Bz(i,j,k-1)
+          vybm = (vy(ix ,iy ,izm) + vy(ixm,iy ,izm) &
+              +   vy(ix ,iym,izm) + vy(ixm,iym,izm)) * 0.25_num
+          ! vz at By(i,j,k)
+          vzb  = (vz(ix ,iy ,iz ) + vz(ixm,iy ,iz ) &
+              +   vz(ix ,iy ,izm) + vz(ixm,iy ,izm)) * 0.25_num
+          ! vz at By(i,j-1,k)
+          vzbm = (vz(ix ,iym,iz ) + vz(ixm,iym,iz ) &
+              +   vz(ix ,iym,izm) + vz(ixm,iym,izm)) * 0.25_num
+
+          dvydz = (vyb - vybm) / dzb(iz)
+          dvzdy = (vzb - vzbm) / dyb(iy)
+          dvyz = dvydz + dvzdy
+
+          syz = dvyz * 0.5_num
+
+          ! Heating array is offset, hence ix+1, etc
+          heating_array(ix+1, iy+1, iz+1) = 2*visc3*(sxx**2 + syy**2 + szz**2 &
+            + 2*(sxy**2 + sxz**2 + syz**2))
+        END DO
+      END DO
+    END DO
+  END SUBROUTINE isotropic_heating
 
   !****************************************************************************
   ! Test whether any of the conditions for doing output on the current

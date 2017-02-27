@@ -221,6 +221,7 @@ CONTAINS
     ! 17 - jx
     ! 18 - jy
     ! 19 - jz
+    ! 20 - isotropic heating
     ! If a given element of dump_mask is true then that field is dumped
     ! If the element is false then the field isn't dumped
     ! N.B. if dump_mask(1:8) not true then the restart will not work
