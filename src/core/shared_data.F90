@@ -153,7 +153,7 @@ MODULE shared_data
   REAL(num) :: eta_bar
 
   ! Braginskii viscosity
-  REAL(num) :: xi
+  REAL(num) :: brag_alpha
 
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)
@@ -203,7 +203,7 @@ MODULE shared_data
   INTEGER, PARAMETER :: c_stagger_bz = c_stagger_face_z
 
   ! Number of variables to dump
-  LOGICAL, DIMENSION(20) :: dump_mask
+  LOGICAL, DIMENSION(25) :: dump_mask
 
   INTEGER, PARAMETER :: stat_unit = 20
   INTEGER, PARAMETER :: en_unit = 30
