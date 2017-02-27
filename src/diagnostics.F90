@@ -711,8 +711,6 @@ CONTAINS
 
     time = time + dt
 
-    WRITE(*, *) 'time =', time, 'dt =', dt, 'step =', step
-
   END SUBROUTINE set_dt
 
 
