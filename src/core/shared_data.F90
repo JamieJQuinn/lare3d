@@ -153,7 +153,7 @@ MODULE shared_data
   REAL(num) :: eta_bar
 
   ! Braginskii viscosity
-  REAL(num) :: xi
+  REAL(num) :: brag_alpha
 
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)

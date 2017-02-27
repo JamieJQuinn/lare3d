@@ -410,12 +410,12 @@ CONTAINS
     REAL(num) :: fx, fy, fz, dv, s, L, cs, cf, L2
     REAL(num) :: w2_1, w2_2, w2_3
     REAL(num) :: flag1, flag2, flag3, flag4, sg0, dvg0
-    #ifdef BRAGINSKII_VISCOSITY
+#ifdef BRAGINSKII_VISCOSITY
     REAL(num) :: mB2, xi2, brag_visc1, brag_visc2
     REAL(num) :: wbdotb, a, b, c, d
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
     REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
-    #endif
+#endif
 
     p_visc = 0.0_num
 
@@ -667,9 +667,9 @@ CONTAINS
 
           ! Calculate WB.B
           wbdotb = &
-              (bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
-            + (bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
-            + (bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
+              2._num*(bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
+            + 2._num*(bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
+            + 2._num*(bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
 
           ! Calculate Braginskii stress
           bsxx = wbdotb*(a*btxx + b) + 2._num*d*sxx &
