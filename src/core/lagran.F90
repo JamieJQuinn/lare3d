@@ -411,7 +411,7 @@ CONTAINS
     REAL(num) :: w2_1, w2_2, w2_3
     REAL(num) :: flag1, flag2, flag3, flag4, sg0, dvg0
     #ifdef BRAGINSKII_VISCOSITY
-    REAL(num) :: mB2, xi2, n1, n2
+    REAL(num) :: mB2, xi2, brag_visc1, brag_visc2
     REAL(num) :: wbdotb, a, b, c, d
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
     REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
