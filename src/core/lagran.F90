@@ -410,12 +410,6 @@ CONTAINS
     REAL(num) :: fx, fy, fz, dv, s, L, cs, cf, L2
     REAL(num) :: w2_1, w2_2, w2_3
     REAL(num) :: flag1, flag2, flag3, flag4, sg0, dvg0
-#ifdef BRAGINSKII_VISCOSITY
-    REAL(num) :: mB2, xi, delta, n0, n1, n2
-    REAL(num) :: wbdotb, a, b, c, d
-    REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
-    REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
-#endif
 
     p_visc = 0.0_num
 
@@ -643,83 +637,6 @@ CONTAINS
           bx1(ix,iy,iz) = (bx1(ix,iy,iz) + w3 * dt2) / (1.0_num + dv)
           by1(ix,iy,iz) = (by1(ix,iy,iz) + w4 * dt2) / (1.0_num + dv)
           bz1(ix,iy,iz) = (bz1(ix,iy,iz) + w5 * dt2) / (1.0_num + dv)
-
-#ifdef BRAGINSKII_VISCOSITY
-          mB2 = bx1(ix, iy, iz)**2 + by1(ix, iy, iz)**2 + bz1(ix, iy, iz)**2
-
-          ! Actual values for n1, n2
-          !n2 = n0*(a1*alpha^2*mB2 + a2)/(alpha^4*mB2^2 + a3*alpha^2*mB2 + a2)
-          !n1 = n2*2*SQRT(mB2)
-
-          ! Approximate physically motivated values for n1, n2
-          n0 = visc3
-          xi = 1e5
-          delta = 2.23 + 4.03*xi**2 + xi**4
-          n2 = n0/delta*(6/5*xi*2 + 2.23)
-          n1 = n2*2*xi
-
-          a = (3*n0 + n1 - 4*n2)/(2*mB2**2)
-          b = (n1 - n0)/(2*mB2)
-          c = (n2 - n1)/(mB2)
-          d = n1
-
-          ! Calculate B tensor product B
-          btxx = bx1(ix, iy, iz)**2
-          btyy = by1(ix, iy, iz)**2
-          btzz = bz1(ix, iy, iz)**2
-          btxy = bx1(ix, iy, iz)*by1(ix, iy, iz)
-          btxz = bx1(ix, iy, iz)*bz1(ix, iy, iz)
-          btyz = by1(ix, iy, iz)*bz1(ix, iy, iz)
-
-          ! Calculate WB.B
-          wbdotb = &
-              (bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
-            + (bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
-            + (bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
-
-          ! Calculate Braginskii stress
-          bsxx = wbdotb*(a*btxx + b) + 2.0_num*c*(btxx*sxx + btxy*sxy + btxz*sxz) + d*sxx
-          bsyy = wbdotb*(a*btyy + b) + 2.0_num*c*(btyy*syy + btyz*syz + btxy*sxy) + d*syy
-          bszz = wbdotb*(a*btzz + b) + 2.0_num*c*(btzz*szz + btxz*sxz + btyz*syz) + d*szz
-
-          bsxy = wbdotb*a*btxy + c*(btxx*sxy + btxy*sxx + btyy*sxy + btxy*syy + btyz*sxz + btxz*syz) + d*sxy
-          bsxz = wbdotb*a*btxz + c*(btxz*sxx + btxx*sxz + btyz*sxy + btxy*syz + btzz*sxz + btxz*szz) + d*sxz
-          bsyz = wbdotb*a*btyz + c*(btyz*syy + btyy*syz + btxz*sxy + btxy*sxz + btzz*syz + btyz*szz) + d*syz
-
-          qxx(ix,iy,iz) = qxx(ix,iy,iz) + 2.0_num * bsxx
-          qyy(ix,iy,iz) = qyy(ix,iy,iz) + 2.0_num * bsyy
-          qzz(ix,iy,iz) = qzz(ix,iy,iz) + 2.0_num * bszz
-          qxy(ix,iy,iz) = qxy(ix,iy,iz) + 2.0_num * bsxy
-          qxz(ix,iy,iz) = qxz(ix,iy,iz) + 2.0_num * bsxz
-          qyz(ix,iy,iz) = qyz(ix,iy,iz) + 2.0_num * bsyz
-#endif
-
-#ifdef SWITCHING_VISCOSITY
-          mB2 = bx1(ix, iy, iz)**2 + by1(ix, iy, iz)**2 + bz1(ix, iy, iz)**2
-
-          btxx = bx1(ix, iy, iz)**2
-          btyy = by1(ix, iy, iz)**2
-          btzz = bz1(ix, iy, iz)**2
-          btxy = bx1(ix, iy, iz)*by1(ix, iy, iz)
-          btxz = bx1(ix, iy, iz)*bz1(ix, iy, iz)
-          btyz = by1(ix, iy, iz)*bz1(ix, iy, iz)
-          
-          wbdotb = &
-              (bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
-            + (bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
-            + (bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
-
-          a0 = 1
-          a = a0*mB2
-          s = ?
-
-          bsxx = n0*((1-s**2)*sxx + s**2/mB2**2*wbdotb*(3*btxx - mB2)/2.0_num)
-          bsxy = n0*((1-s**2)*sxy + s**2/mB2**2*wbdotb*(3*btxy - mB2)/2.0_num)
-          bsxz = n0*((1-s**2)*sxz + s**2/mB2**2*wbdotb*(3*btxz - mB2)/2.0_num)
-          bsyy = n0*((1-s**2)*syy + s**2/mB2**2*wbdotb*(3*btyy - mB2)/2.0_num)
-          bsyz = n0*((1-s**2)*syz + s**2/mB2**2*wbdotb*(3*btyz - mB2)/2.0_num)
-          bszz = n0*((1-s**2)*szz + s**2/mB2**2*wbdotb*(3*btzz - mB2)/2.0_num)
-#endif
         END DO
       END DO
     END DO

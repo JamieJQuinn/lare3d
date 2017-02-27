@@ -151,11 +151,6 @@ DEFINES := $(DEFINE)
 # Uncomment to enable the MPI error handler which is useful for debugging
 #DEFINES += $(D)MPI_DEBUG
 
-# Uncomment to include anisotropic braginskii viscosity
-#DEFINES += $(D)BRAGINSKII_VISCOSITY
-
-# Uncomment to include anisotropic switching viscosity
-#DEFINES += $(D)SWITCHING_VISCOSITY
 
 # --------------------------------------------------
 # Shouldn't need to touch below here
