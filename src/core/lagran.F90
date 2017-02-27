@@ -410,10 +410,12 @@ CONTAINS
     REAL(num) :: fx, fy, fz, dv, s, L, cs, cf, L2
     REAL(num) :: w2_1, w2_2, w2_3
     REAL(num) :: flag1, flag2, flag3, flag4, sg0, dvg0
-    REAL(num) :: mB2, xi, delta, n0, n1, n2
+    #ifdef BRAGINSKII_VISCOSITY
+    REAL(num) :: mB2, xi2, n1, n2
     REAL(num) :: wbdotb, a, b, c, d
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
     REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
+    #endif
 
     p_visc = 0.0_num
 
@@ -643,22 +645,17 @@ CONTAINS
           bz1(ix,iy,iz) = (bz1(ix,iy,iz) + w5 * dt2) / (1.0_num + dv)
 
 #ifdef BRAGINSKII_VISCOSITY
+          ! Magnitude of B squared
           mB2 = bx1(ix, iy, iz)**2 + by1(ix, iy, iz)**2 + bz1(ix, iy, iz)**2
 
-          ! Actual values for n1, n2
-          !n2 = n0*(a1*alpha^2*mB2 + a2)/(alpha^4*mB2^2 + a3*alpha^2*mB2 + a2)
-          !n1 = n2*2*SQRT(mB2)
+          xi2 = brag_alpha**2 * mB2
+          brag_visc2 = visc3*(6._num/5._num*xi2 + 2.23_num)/(2.23_num + 4.03_num*xi2 + xi2**2)
+          brag_visc1 = brag_visc2*2*SQRT(mB2)
 
-          ! Approximate physically motivated values for n1, n2
-          xi = 10**5
-          delta = 2.23 + 4.03*xi**2 + xi**4
-          n2 = n0/delta*(6/5*xi*2 + 2.23)
-          n1 = n2*2*xi
-
-          a = (3*n0 + n1 - 4*n2)/(2*mB2**2)
-          b = (n1 - n0)/(2*mB2)
-          c = (n2 - n1)/(mB2)
-          d = n1
+          a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
+          b = (brag_visc1 - visc3)/(2._num*mB2)
+          c = (brag_visc2 - brag_visc1)/(mB2)
+          d = brag_visc1
 
           ! Calculate B tensor product B
           btxx = bx1(ix, iy, iz)**2
@@ -675,20 +672,26 @@ CONTAINS
             + (bx1(ix, iy, iz)*sxz + by1(ix, iy, iz)*syz + bz1(ix, iy, iz)*szz)*bz1(ix, iy, iz)
 
           ! Calculate Braginskii stress
-          bsxx = wbdotb*(a*btxx + b) + 2.0_num*c*(btxx*sxx + btxy*sxy + btxz*sxz) + d*sxx
-          bsyy = wbdotb*(a*btyy + b) + 2.0_num*c*(btyy*syy + btyz*syz + btxy*sxy) + d*syy
-          bszz = wbdotb*(a*btzz + b) + 2.0_num*c*(btzz*szz + btxz*sxz + btyz*syz) + d*szz
+          bsxx = wbdotb*(a*btxx + b) + 2._num*d*sxx &
+            + 4._num*c*(btxx*sxx + btxy*sxy + btxz*sxz)
+          bsyy = wbdotb*(a*btyy + b) + 2._num*d*syy &
+            + 4._num*c*(btyy*syy + btyz*syz + btxy*sxy)
+          bszz = wbdotb*(a*btzz + b) + 2._num*d*szz &
+            + 4._num*c*(btzz*szz + btxz*sxz + btyz*syz)
 
-          bsxy = wbdotb*a*btxy + c*(btxx*sxy + btxy*sxx + btyy*sxy + btxy*syy + btyz*sxz + btxz*syz) + d*sxy
-          bsxz = wbdotb*a*btxz + c*(btxz*sxx + btxx*sxz + btyz*sxy + btxy*syz + btzz*sxz + btxz*szz) + d*sxz
-          bsyz = wbdotb*a*btyz + c*(btyz*syy + btyy*syz + btxz*sxy + btxy*sxz + btzz*syz + btyz*szz) + d*syz
+          bsxy = wbdotb*a*btxy + 2._num*d*sxy &
+            + 2._num*c*(btxx*sxy + btxy*sxx + btyy*sxy + btxy*syy + btyz*sxz + btxz*syz)
+          bsxz = wbdotb*a*btxz + 2._num*d*sxz &
+            + 2._num*c*(btxz*sxx + btxx*sxz + btyz*sxy + btxy*syz + btzz*sxz + btxz*szz)
+          bsyz = wbdotb*a*btyz + 2._num*d*syz &
+            + 2._num*c*(btyz*syy + btyy*syz + btxz*sxy + btxy*sxz + btzz*syz + btyz*szz)
 
-          qxx(ix,iy,iz) = qxx(ix,iy,iz) + 2.0_num * bsxx
-          qyy(ix,iy,iz) = qyy(ix,iy,iz) + 2.0_num * bsyy
-          qzz(ix,iy,iz) = qzz(ix,iy,iz) + 2.0_num * bszz
-          qxy(ix,iy,iz) = qxy(ix,iy,iz) + 2.0_num * bsxy
-          qxz(ix,iy,iz) = qxz(ix,iy,iz) + 2.0_num * bsxz
-          qyz(ix,iy,iz) = qyz(ix,iy,iz) + 2.0_num * bsyz
+          qxx(ix,iy,iz) = qxx(ix,iy,iz) + bsxx
+          qyy(ix,iy,iz) = qyy(ix,iy,iz) + bsyy
+          qzz(ix,iy,iz) = qzz(ix,iy,iz) + bszz
+          qxy(ix,iy,iz) = qxy(ix,iy,iz) + bsxy
+          qxz(ix,iy,iz) = qxz(ix,iy,iz) + bsxz
+          qyz(ix,iy,iz) = qyz(ix,iy,iz) + bsyz
 #endif
 
 #ifdef SWITCHING_VISCOSITY
@@ -700,7 +703,7 @@ CONTAINS
           btxy = bx1(ix, iy, iz)*by1(ix, iy, iz)
           btxz = bx1(ix, iy, iz)*bz1(ix, iy, iz)
           btyz = by1(ix, iy, iz)*bz1(ix, iy, iz)
-          
+
           wbdotb = &
               (bx1(ix, iy, iz)*sxx + by1(ix, iy, iz)*sxy + bz1(ix, iy, iz)*sxz)*bx1(ix, iy, iz) &
             + (bx1(ix, iy, iz)*sxy + by1(ix, iy, iz)*syy + bz1(ix, iy, iz)*syz)*by1(ix, iy, iz) &
