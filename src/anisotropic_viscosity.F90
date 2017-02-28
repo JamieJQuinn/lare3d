@@ -40,9 +40,11 @@ CONTAINS
     brag_visc2 = brag_visc_coeff(mB2)
 
     ! Braginskii tensor coefficients
-    a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
-    b = (brag_visc1 - visc3)/(2._num*mB2)
-    c = (brag_visc2 - brag_visc1)/(mB2)
+    IF (mB2 /= 0.0_num) THEN
+      a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
+      b = (brag_visc1 - visc3)/(2._num*mB2)
+      c = (brag_visc2 - brag_visc1)/(mB2)
+    END IF
     d = brag_visc1
 
     ! Calculate B tensor product B
