@@ -56,9 +56,9 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 300
-    ny_global = 300
-    nz_global = 300
+    nx_global = 200
+    ny_global = 200
+    nz_global = 200
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
@@ -233,6 +233,7 @@ CONTAINS
     IF (resistive_mhd) dump_mask(16) = .TRUE.
 
     dump_mask(20) = .TRUE.
+    dump_mask(21) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 
