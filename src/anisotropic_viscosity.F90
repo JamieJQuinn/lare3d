@@ -39,6 +39,7 @@ CONTAINS
     brag_visc1 = brag_visc_coeff(4.0_num*mB2)
     brag_visc2 = brag_visc_coeff(mB2)
 
+    ! Braginskii tensor coefficients
     a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
     b = (brag_visc1 - visc3)/(2._num*mB2)
     c = (brag_visc2 - brag_visc1)/(mB2)
@@ -85,6 +86,7 @@ CONTAINS
   END SUBROUTINE add_braginskii_stress
 
   REAL(num) FUNCTION calc_wbdotb(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
+    ! Calculates (WB) dot B
     REAL(num), INTENT(IN) :: bx, by, bz, sxx, sxy, sxz, syy, syz, szz
     calc_wbdotb = &
       2._num*(bx*sxx + by*sxy + bz*sxz)*bx &
@@ -94,6 +96,7 @@ CONTAINS
   END
 
   REAL(num) FUNCTION calc_wb2(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
+    ! Calculates |WB|^2
     REAL(num), INTENT(IN) :: bx, by, bz, sxx, sxy, sxz, syy, syz, szz
     calc_wb2 = &
       4._num*(bx*sxx + by*sxy + bz*sxz)**2 &
@@ -103,6 +106,7 @@ CONTAINS
   END
 
   REAL(num) FUNCTION brag_visc_coeff(mB2)
+    ! Calculates viscosity parameter
     REAL(num), INTENT(IN) :: mB2
     REAL(num) :: xi2
     xi2 = brag_alpha**2 * mB2
