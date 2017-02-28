@@ -616,12 +616,15 @@ CONTAINS
           qyz(ix,iy,iz) = syz * (L2 * rho(ix,iy,iz) &
               * (visc1 * cf + L2 * visc2 * ABS(syz)))
 #endif
+
+#ifndef BRAGINSKII_VISCOSITY
           qxx(ix,iy,iz) = qxx(ix,iy,iz) + 2.0_num * sxx * rho(ix,iy,iz) * visc3
           qyy(ix,iy,iz) = qyy(ix,iy,iz) + 2.0_num * syy * rho(ix,iy,iz) * visc3
           qzz(ix,iy,iz) = qzz(ix,iy,iz) + 2.0_num * szz * rho(ix,iy,iz) * visc3
           qxy(ix,iy,iz) = qxy(ix,iy,iz) + 2.0_num * sxy * rho(ix,iy,iz) * visc3
           qxz(ix,iy,iz) = qxz(ix,iy,iz) + 2.0_num * sxz * rho(ix,iy,iz) * visc3
           qyz(ix,iy,iz) = qyz(ix,iy,iz) + 2.0_num * syz * rho(ix,iy,iz) * visc3
+#endif
 
 #ifdef BRAGINSKII_VISCOSITY
           CALL add_braginskii_stress(&
