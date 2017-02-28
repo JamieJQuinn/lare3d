@@ -35,7 +35,8 @@ CONTAINS
     ! Magnitude of B squared
     mB2 = bx**2 + by**2 + bz**2
 
-    brag_visc1 = brag_visc_coeff(2*mB2)
+    ! Viscosity parameters
+    brag_visc1 = brag_visc_coeff(4.0_num*mB2)
     brag_visc2 = brag_visc_coeff(mB2)
 
     a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
