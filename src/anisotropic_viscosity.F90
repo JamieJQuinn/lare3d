@@ -231,14 +231,14 @@ CONTAINS
 #endif
 #ifdef BRAGINSKII_VISCOSITY
             mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
-            brag_visc1 = brag_visc_coeff(2*mB2)
+            brag_visc1 = brag_visc_coeff(4.0_num*mB2)
             heating_array(ix+1, iy+1, iz+1) = brag_visc1/2.0_num*traceW2
 #endif
           ELSE
 #ifdef BRAGINSKII_VISCOSITY
             mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
             IF (mB2 /= 0.0_num) THEN
-              brag_visc1 = brag_visc_coeff(2*mB2)
+              brag_visc1 = brag_visc_coeff(4.0_num*mB2)
               brag_visc2 = brag_visc_coeff(mB2)
               a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(4._num*mB2**2)
               b = (brag_visc2 - brag_visc1)/(mB2)
