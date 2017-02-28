@@ -64,11 +64,14 @@ CONTAINS
       + 4._num*c*(btzz*szz + btxz*sxz + btyz*syz)
 
     bsxy = wbdotb*a*btxy + 2._num*d*sxy &
-      + 2._num*c*(btxx*sxy + btxy*syy + btxz*syz + sxx*btxy + sxy*btyy + sxz*btyz)
+      + 2._num*c*(btxx* sxy + btxy* syy + btxz* syz &
+                +  sxx*btxy +  sxy*btyy +  sxz*btyz)
     bsxz = wbdotb*a*btxz + 2._num*d*sxz &
-      + 2._num*c*(btxx*sxz + btxy*syz + btxz*szz + sxx*btxz + sxy*btyz + sxz*btzz)
+      + 2._num*c*(btxx* sxz + btxy* syz + btxz* szz &
+                +  sxx*btxz +  sxy*btyz +  sxz*btzz)
     bsyz = wbdotb*a*btyz + 2._num*d*syz &
-      + 2._num*c*(btxy*sxz + btyy*syz + btyz*szz + sxy*btxz + syy*btyz + syz*btzz)
+      + 2._num*c*(btxy* sxz + btyy* syz + btyz* szz &
+                +  sxy*btxz +  syy*btyz +  syz*btzz)
 
     qxx = qxx + bsxx
     qyy = qyy + bsyy
