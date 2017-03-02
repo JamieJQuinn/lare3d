@@ -39,8 +39,11 @@ CONTAINS
     brag_visc1 = brag_visc_coeff(4.0_num*mB2)
     brag_visc2 = brag_visc_coeff(mB2)
 
+    a = 0._num
+    b = 0._num
+    c = 0._num
     ! Braginskii tensor coefficients
-    IF (mB2 /= 0.0_num) THEN
+    IF (mB2 > none_zero) THEN
       a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
       b = (brag_visc1 - visc3)/(2._num*mB2)
       c = (brag_visc2 - brag_visc1)/(mB2)
@@ -120,11 +123,7 @@ CONTAINS
     LOGICAL :: isotropic
     REAL(num), DIMENSION(:, :, :), INTENT(OUT) :: heating_array
 
-    REAL(num) :: vxb, vxbm, vyb, vybm, vzb, vzbm
-    REAL(num) :: dvxdx, dvydx, dvzdx
-    REAL(num) :: dvxdy, dvydy, dvzdy
-    REAL(num) :: dvxdz, dvydz, dvzdz
-    REAL(num) :: dvxy, dvxz, dvyz
+
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
     REAL(num) :: traceW2
 #ifdef BRAGINSKII_VISCOSITY
@@ -135,97 +134,9 @@ CONTAINS
     heating_array = 0.0_num
 
     DO iz = 0, nz
-      izm = iz - 1
-      izp = iz + 1
       DO iy = 0, ny
-        iym = iy - 1
-        iyp = iy + 1
         DO ix = 0, nx
-          ixm = ix - 1
-          ixp = ix + 1
-
-          ! vx at Bx(i,j,k)
-          vxb  = (vx(ix ,iy ,iz ) + vx(ix ,iym,iz ) &
-              +   vx(ix ,iy ,izm) + vx(ix ,iym,izm)) * 0.25_num
-          ! vx at Bx(i-1,j,k)
-          vxbm = (vx(ixm,iy ,iz ) + vx(ixm,iym,iz ) &
-              +   vx(ixm,iy ,izm) + vx(ixm,iym,izm)) * 0.25_num
-          ! vy at By(i,j,k)
-          vyb  = (vy(ix ,iy ,iz ) + vy(ixm,iy ,iz ) &
-              +   vy(ix ,iy ,izm) + vy(ixm,iy ,izm)) * 0.25_num
-          ! vy at By(i,j-1,k)
-          vybm = (vy(ix ,iym,iz ) + vy(ixm,iym,iz ) &
-              +   vy(ix ,iym,izm) + vy(ixm,iym,izm)) * 0.25_num
-          ! vz at Bz(i,j,k)
-          vzb  = (vz(ix ,iy ,iz ) + vz(ixm,iy ,iz ) &
-              +   vz(ix ,iym,iz ) + vz(ixm,iym,iz )) * 0.25_num
-          ! vz at Bz(i,j,k-1)
-          vzbm = (vz(ix ,iy ,izm) + vz(ixm,iy ,izm) &
-              +   vz(ix ,iym,izm) + vz(ixm,iym,izm)) * 0.25_num
-
-          dvxdx = (vxb - vxbm) / dxb(ix)
-          dvydy = (vyb - vybm) / dyb(iy)
-          dvzdz = (vzb - vzbm) / dzb(iz)
-
-          ! vx at By(i,j,k)
-          vxb  = (vx(ix ,iy ,iz ) + vx(ixm,iy ,iz ) &
-              +   vx(ix ,iy ,izm) + vx(ixm,iy ,izm)) * 0.25_num
-          ! vx at By(i,j-1,k)
-          vxbm = (vx(ix ,iym,iz ) + vx(ixm,iym,iz ) &
-              +   vx(ix ,iym,izm) + vx(ixm,iym,izm)) * 0.25_num
-          ! vy at Bx(i,j,k)
-          vyb  = (vy(ix ,iy ,iz ) + vy(ix ,iym,iz ) &
-              +   vy(ix ,iy ,izm) + vy(ix ,iym,izm)) * 0.25_num
-          ! vy at Bx(i-1,j,k)
-          vybm = (vy(ixm,iy ,iz ) + vy(ixm,iym,iz ) &
-              +   vy(ixm,iy ,izm) + vy(ixm,iym,izm)) * 0.25_num
-
-          dvxdy = (vxb - vxbm) / dyb(iy)
-          dvydx = (vyb - vybm) / dxb(ix)
-          dvxy = dvxdy + dvydx
-
-          sxy = dvxy * 0.5_num
-          sxx = (2.0_num * dvxdx - dvydy - dvzdz) * third
-          syy = (2.0_num * dvydy - dvxdx - dvzdz) * third
-          szz = (2.0_num * dvzdz - dvxdx - dvydy) * third
-
-          ! vx at Bz(i,j,k)
-          vxb  = (vx(ix ,iy ,iz ) + vx(ixm,iy ,iz ) &
-              +   vx(ix ,iym,iz ) + vx(ixm,iym,iz )) * 0.25_num
-          ! vx at Bz(i,j,k-1)
-          vxbm = (vx(ix ,iy ,izm) + vx(ixm,iy ,izm) &
-              +   vx(ix ,iym,izm) + vx(ixm,iym,izm)) * 0.25_num
-          ! vz at Bx(i,j,k)
-          vzb  = (vz(ix ,iy ,iz ) + vz(ix ,iym,iz ) &
-              +   vz(ix ,iy ,izm) + vz(ix ,iym,izm)) * 0.25_num
-          ! vz at Bx(i-1,j,k)
-          vzbm = (vz(ixm,iy ,iz ) + vz(ixm,iym,iz ) &
-              +   vz(ixm,iy ,izm) + vz(ixm,iym,izm)) * 0.25_num
-
-          dvxdz = (vxb - vxbm) / dzb(iz)
-          dvzdx = (vzb - vzbm) / dxb(ix)
-          dvxz = dvxdz + dvzdx
-
-          sxz = dvxz * 0.5_num
-
-          ! vy at Bz(i,j,k)
-          vyb  = (vy(ix ,iy ,iz ) + vy(ixm,iy ,iz ) &
-              +   vy(ix ,iym,iz ) + vy(ixm,iym,iz )) * 0.25_num
-          ! vy at Bz(i,j,k-1)
-          vybm = (vy(ix ,iy ,izm) + vy(ixm,iy ,izm) &
-              +   vy(ix ,iym,izm) + vy(ixm,iym,izm)) * 0.25_num
-          ! vz at By(i,j,k)
-          vzb  = (vz(ix ,iy ,iz ) + vz(ixm,iy ,iz ) &
-              +   vz(ix ,iy ,izm) + vz(ixm,iy ,izm)) * 0.25_num
-          ! vz at By(i,j-1,k)
-          vzbm = (vz(ix ,iym,iz ) + vz(ixm,iym,iz ) &
-              +   vz(ix ,iym,izm) + vz(ixm,iym,izm)) * 0.25_num
-
-          dvydz = (vyb - vybm) / dzb(iz)
-          dvzdy = (vzb - vzbm) / dyb(iy)
-          dvyz = dvydz + dvzdy
-
-          syz = dvyz * 0.5_num
+          CALL calculate_stress(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
 
           IF (isotropic) THEN
             traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2*(sxy**2 + sxz**2 + syz**2))
@@ -261,5 +172,110 @@ CONTAINS
       END DO
     END DO
   END SUBROUTINE calculate_heating
+
+  SUBROUTINE calculate_stress(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
+    REAL(num), INTENT(OUT) :: sxx, sxy, sxz, syy, syz, szz
+    INTEGER, INTENT(IN) :: ix, iy, iz
+
+    REAL(num) :: vxb, vxbm, vyb, vybm, vzb, vzbm
+    REAL(num) :: dvxdx, dvydx, dvzdx
+    REAL(num) :: dvxdy, dvydy, dvzdy
+    REAL(num) :: dvxdz, dvydz, dvzdz
+    REAL(num) :: dvxy, dvxz, dvyz
+    INTEGER :: ixm, iym, izm
+    INTEGER :: ixp, iyp, izp
+
+    izm = iz - 1
+    izp = iz + 1
+    iym = iy - 1
+    iyp = iy + 1
+    ixm = ix - 1
+    ixp = ix + 1
+
+    ! vx at Bx(i,j,k)
+    vxb  = (vx(ix ,iy ,iz ) + vx(ix ,iym,iz ) &
+        +   vx(ix ,iy ,izm) + vx(ix ,iym,izm)) * 0.25_num
+    ! vx at Bx(i-1,j,k)
+    vxbm = (vx(ixm,iy ,iz ) + vx(ixm,iym,iz ) &
+        +   vx(ixm,iy ,izm) + vx(ixm,iym,izm)) * 0.25_num
+    ! vy at By(i,j,k)
+    vyb  = (vy(ix ,iy ,iz ) + vy(ixm,iy ,iz ) &
+        +   vy(ix ,iy ,izm) + vy(ixm,iy ,izm)) * 0.25_num
+    ! vy at By(i,j-1,k)
+    vybm = (vy(ix ,iym,iz ) + vy(ixm,iym,iz ) &
+        +   vy(ix ,iym,izm) + vy(ixm,iym,izm)) * 0.25_num
+    ! vz at Bz(i,j,k)
+    vzb  = (vz(ix ,iy ,iz ) + vz(ixm,iy ,iz ) &
+        +   vz(ix ,iym,iz ) + vz(ixm,iym,iz )) * 0.25_num
+    ! vz at Bz(i,j,k-1)
+    vzbm = (vz(ix ,iy ,izm) + vz(ixm,iy ,izm) &
+        +   vz(ix ,iym,izm) + vz(ixm,iym,izm)) * 0.25_num
+
+    dvxdx = (vxb - vxbm) / dxb(ix)
+    dvydy = (vyb - vybm) / dyb(iy)
+    dvzdz = (vzb - vzbm) / dzb(iz)
+
+    ! vx at By(i,j,k)
+    vxb  = (vx(ix ,iy ,iz ) + vx(ixm,iy ,iz ) &
+        +   vx(ix ,iy ,izm) + vx(ixm,iy ,izm)) * 0.25_num
+    ! vx at By(i,j-1,k)
+    vxbm = (vx(ix ,iym,iz ) + vx(ixm,iym,iz ) &
+        +   vx(ix ,iym,izm) + vx(ixm,iym,izm)) * 0.25_num
+    ! vy at Bx(i,j,k)
+    vyb  = (vy(ix ,iy ,iz ) + vy(ix ,iym,iz ) &
+        +   vy(ix ,iy ,izm) + vy(ix ,iym,izm)) * 0.25_num
+    ! vy at Bx(i-1,j,k)
+    vybm = (vy(ixm,iy ,iz ) + vy(ixm,iym,iz ) &
+        +   vy(ixm,iy ,izm) + vy(ixm,iym,izm)) * 0.25_num
+
+    dvxdy = (vxb - vxbm) / dyb(iy)
+    dvydx = (vyb - vybm) / dxb(ix)
+    dvxy = dvxdy + dvydx
+
+    sxy = dvxy * 0.5_num
+    sxx = (2.0_num * dvxdx - dvydy - dvzdz) * third
+    syy = (2.0_num * dvydy - dvxdx - dvzdz) * third
+    szz = (2.0_num * dvzdz - dvxdx - dvydy) * third
+
+    ! vx at Bz(i,j,k)
+    vxb  = (vx(ix ,iy ,iz ) + vx(ixm,iy ,iz ) &
+        +   vx(ix ,iym,iz ) + vx(ixm,iym,iz )) * 0.25_num
+    ! vx at Bz(i,j,k-1)
+    vxbm = (vx(ix ,iy ,izm) + vx(ixm,iy ,izm) &
+        +   vx(ix ,iym,izm) + vx(ixm,iym,izm)) * 0.25_num
+    ! vz at Bx(i,j,k)
+    vzb  = (vz(ix ,iy ,iz ) + vz(ix ,iym,iz ) &
+        +   vz(ix ,iy ,izm) + vz(ix ,iym,izm)) * 0.25_num
+    ! vz at Bx(i-1,j,k)
+    vzbm = (vz(ixm,iy ,iz ) + vz(ixm,iym,iz ) &
+        +   vz(ixm,iy ,izm) + vz(ixm,iym,izm)) * 0.25_num
+
+    dvxdz = (vxb - vxbm) / dzb(iz)
+    dvzdx = (vzb - vzbm) / dxb(ix)
+    dvxz = dvxdz + dvzdx
+
+    sxz = dvxz * 0.5_num
+
+    ! vy at Bz(i,j,k)
+    vyb  = (vy(ix ,iy ,iz ) + vy(ixm,iy ,iz ) &
+        +   vy(ix ,iym,iz ) + vy(ixm,iym,iz )) * 0.25_num
+    ! vy at Bz(i,j,k-1)
+    vybm = (vy(ix ,iy ,izm) + vy(ixm,iy ,izm) &
+        +   vy(ix ,iym,izm) + vy(ixm,iym,izm)) * 0.25_num
+    ! vz at By(i,j,k)
+    vzb  = (vz(ix ,iy ,iz ) + vz(ixm,iy ,iz ) &
+        +   vz(ix ,iy ,izm) + vz(ixm,iy ,izm)) * 0.25_num
+    ! vz at By(i,j-1,k)
+    vzbm = (vz(ix ,iym,iz ) + vz(ixm,iym,iz ) &
+        +   vz(ix ,iym,izm) + vz(ixm,iym,izm)) * 0.25_num
+
+    dvydz = (vyb - vybm) / dzb(iz)
+    dvzdy = (vzb - vzbm) / dyb(iy)
+    dvyz = dvydz + dvzdy
+
+    syz = dvyz * 0.5_num
+
+    RETURN
+  END SUBROUTINE calculate_stress
 
 END MODULE anisotropic_viscosity
