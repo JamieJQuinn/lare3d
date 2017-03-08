@@ -617,6 +617,7 @@ CONTAINS
               * (visc1 * cf + L2 * visc2 * ABS(syz)))
 #endif
 
+#ifndef SWITCHING_VISCOSITY
 #ifndef BRAGINSKII_VISCOSITY
           qxx(ix,iy,iz) = qxx(ix,iy,iz) + 2.0_num * sxx * rho(ix,iy,iz) * visc3
           qyy(ix,iy,iz) = qyy(ix,iy,iz) + 2.0_num * syy * rho(ix,iy,iz) * visc3
@@ -624,6 +625,7 @@ CONTAINS
           qxy(ix,iy,iz) = qxy(ix,iy,iz) + 2.0_num * sxy * rho(ix,iy,iz) * visc3
           qxz(ix,iy,iz) = qxz(ix,iy,iz) + 2.0_num * sxz * rho(ix,iy,iz) * visc3
           qyz(ix,iy,iz) = qyz(ix,iy,iz) + 2.0_num * syz * rho(ix,iy,iz) * visc3
+#endif
 #endif
 
 #ifdef BRAGINSKII_VISCOSITY
@@ -634,37 +636,10 @@ CONTAINS
 #endif
 
 #ifdef SWITCHING_VISCOSITY
-          mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
-
-          btxx = bx(ix, iy, iz)**2
-          btyy = by(ix, iy, iz)**2
-          btzz = bz(ix, iy, iz)**2
-          btxy = bx(ix, iy, iz)*by(ix, iy, iz)
-          btxz = bx(ix, iy, iz)*bz(ix, iy, iz)
-          btyz = by(ix, iy, iz)*bz(ix, iy, iz)
-
-          wbdotb = &
-              (bx(ix, iy, iz)*sxx + by(ix, iy, iz)*sxy + bz(ix, iy, iz)*sxz)*bx(ix, iy, iz) &
-            + (bx(ix, iy, iz)*sxy + by(ix, iy, iz)*syy + bz(ix, iy, iz)*syz)*by(ix, iy, iz) &
-            + (bx(ix, iy, iz)*sxz + by(ix, iy, iz)*syz + bz(ix, iy, iz)*szz)*bz(ix, iy, iz)
-
-          a0 = 1
-          a = a0*mB2
-          s = ?
-
-          bsxx = n0*((1-s**2)*sxx + s**2/mB2**2*wbdotb*(3*btxx - mB2)/2.0_num)
-          bsxy = n0*((1-s**2)*sxy + s**2/mB2**2*wbdotb*(3*btxy - mB2)/2.0_num)
-          bsxz = n0*((1-s**2)*sxz + s**2/mB2**2*wbdotb*(3*btxz - mB2)/2.0_num)
-          bsyy = n0*((1-s**2)*syy + s**2/mB2**2*wbdotb*(3*btyy - mB2)/2.0_num)
-          bsyz = n0*((1-s**2)*syz + s**2/mB2**2*wbdotb*(3*btyz - mB2)/2.0_num)
-          bszz = n0*((1-s**2)*szz + s**2/mB2**2*wbdotb*(3*btzz - mB2)/2.0_num)
-
-          qxx(ix,iy,iz) = qxx(ix,iy,iz) + bsxx
-          qyy(ix,iy,iz) = qyy(ix,iy,iz) + bsyy
-          qzz(ix,iy,iz) = qzz(ix,iy,iz) + bszz
-          qxy(ix,iy,iz) = qxy(ix,iy,iz) + bsxy
-          qxz(ix,iy,iz) = qxz(ix,iy,iz) + bsxz
-          qyz(ix,iy,iz) = qyz(ix,iy,iz) + bsyz
+          CALL add_switching_stress(&
+            qxx(ix,iy,iz), qxy(ix,iy,iz), qxz(ix,iy,iz), qyy(ix,iy,iz), qyz(ix,iy,iz), qzz(ix,iy,iz),&
+            sxx, sxy, sxz, syy, syz, szz,&
+            bx(ix,iy,iz), by(ix,iy,iz), bz(ix,iy,iz))
 #endif
 
           visc_heat(ix,iy,iz) = &
