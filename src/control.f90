@@ -56,9 +56,9 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 200
-    ny_global = 200
-    nz_global = 200
+    nx_global = 300
+    ny_global = 300
+    nz_global = 300
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
@@ -181,8 +181,8 @@ CONTAINS
     ! This flag is ignored for all other EOS choices.
     neutral_gas = .TRUE.
 
-    ! Braginskii parameters
-    brag_alpha = B0/6._num
+    ! Braginskii viscosity parameters
+    brag_alpha = 6._num/B0
   END SUBROUTINE control_variables
 
 

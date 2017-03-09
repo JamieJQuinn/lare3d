@@ -23,7 +23,7 @@ CONTAINS
     sxx, sxy, sxz, syy, syz, szz,&
     bx, by, bz)
 
-    REAL(num), INTENT(OUT) :: qxx, qxy, qxz, qyy, qyz, qzz
+    REAL(num), INTENT(INOUT) :: qxx, qxy, qxz, qyy, qyz, qzz
     REAL(num), INTENT(IN) :: sxx, sxy, sxz, syy, syz, szz
     REAL(num), INTENT(IN) :: bx, by, bz
 
@@ -39,10 +39,10 @@ CONTAINS
     brag_visc1 = brag_visc_coeff(4.0_num*mB2)
     brag_visc2 = brag_visc_coeff(mB2)
 
+    ! Braginskii tensor coefficients
     a = 0._num
     b = 0._num
     c = 0._num
-    ! Braginskii tensor coefficients
     IF (mB2 > none_zero) THEN
       a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
       b = (brag_visc1 - visc3)/(2._num*mB2)
@@ -98,37 +98,41 @@ CONTAINS
     REAL(num), INTENT(IN) :: sxx, sxy, sxz, syy, syz, szz
     REAL(num), INTENT(IN) :: bx, by, bz
 
-    mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
+    REAL(num) :: mB2, a0, a, s, wbdotb
+    REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
+    REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
 
-    btxx = bx(ix, iy, iz)**2
-    btyy = by(ix, iy, iz)**2
-    btzz = bz(ix, iy, iz)**2
-    btxy = bx(ix, iy, iz)*by(ix, iy, iz)
-    btxz = bx(ix, iy, iz)*bz(ix, iy, iz)
-    btyz = by(ix, iy, iz)*bz(ix, iy, iz)
+    mB2 = bx**2 + by**2 + bz**2
+
+    btxx = bx**2
+    btyy = by**2
+    btzz = bz**2
+    btxy = bx*by
+    btxz = bx*bz
+    btyz = by*bz
 
     wbdotb = &
-        (bx(ix, iy, iz)*sxx + by(ix, iy, iz)*sxy + bz(ix, iy, iz)*sxz)*bx(ix, iy, iz) &
-      + (bx(ix, iy, iz)*sxy + by(ix, iy, iz)*syy + bz(ix, iy, iz)*syz)*by(ix, iy, iz) &
-      + (bx(ix, iy, iz)*sxz + by(ix, iy, iz)*syz + bz(ix, iy, iz)*szz)*bz(ix, iy, iz)
+        (bx*sxx + by*sxy + bz*sxz)*bx &
+      + (bx*sxy + by*syy + bz*syz)*by &
+      + (bx*sxz + by*syz + bz*szz)*bz
 
     a0 = 1
     a = a0*mB2
-    s = ?
+    !s = ?
 
-    bsxx = n0*((1-s**2)*sxx + s**2/mB2**2*wbdotb*(3*btxx - mB2)/2.0_num)
-    bsxy = n0*((1-s**2)*sxy + s**2/mB2**2*wbdotb*(3*btxy - mB2)/2.0_num)
-    bsxz = n0*((1-s**2)*sxz + s**2/mB2**2*wbdotb*(3*btxz - mB2)/2.0_num)
-    bsyy = n0*((1-s**2)*syy + s**2/mB2**2*wbdotb*(3*btyy - mB2)/2.0_num)
-    bsyz = n0*((1-s**2)*syz + s**2/mB2**2*wbdotb*(3*btyz - mB2)/2.0_num)
-    bszz = n0*((1-s**2)*szz + s**2/mB2**2*wbdotb*(3*btzz - mB2)/2.0_num)
+    bsxx = visc3*((1-s**2)*sxx + s**2/mB2**2*wbdotb*(3*btxx - mB2)/2.0_num)
+    bsxy = visc3*((1-s**2)*sxy + s**2/mB2**2*wbdotb*(3*btxy - mB2)/2.0_num)
+    bsxz = visc3*((1-s**2)*sxz + s**2/mB2**2*wbdotb*(3*btxz - mB2)/2.0_num)
+    bsyy = visc3*((1-s**2)*syy + s**2/mB2**2*wbdotb*(3*btyy - mB2)/2.0_num)
+    bsyz = visc3*((1-s**2)*syz + s**2/mB2**2*wbdotb*(3*btyz - mB2)/2.0_num)
+    bszz = visc3*((1-s**2)*szz + s**2/mB2**2*wbdotb*(3*btzz - mB2)/2.0_num)
 
-    qxx(ix,iy,iz) = qxx(ix,iy,iz) + bsxx
-    qyy(ix,iy,iz) = qyy(ix,iy,iz) + bsyy
-    qzz(ix,iy,iz) = qzz(ix,iy,iz) + bszz
-    qxy(ix,iy,iz) = qxy(ix,iy,iz) + bsxy
-    qxz(ix,iy,iz) = qxz(ix,iy,iz) + bsxz
-    qyz(ix,iy,iz) = qyz(ix,iy,iz) + bsyz
+    qxx = qxx + bsxx
+    qyy = qyy + bsyy
+    qzz = qzz + bszz
+    qxy = qxy + bsxy
+    qxz = qxz + bsxz
+    qyz = qyz + bsyz
 
     RETURN
   END SUBROUTINE
@@ -136,20 +140,20 @@ CONTAINS
   REAL(num) FUNCTION calc_wbdotb(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
     ! Calculates (WB) dot B
     REAL(num), INTENT(IN) :: bx, by, bz, sxx, sxy, sxz, syy, syz, szz
-    calc_wbdotb = &
-      2._num*(bx*sxx + by*sxy + bz*sxz)*bx &
-    + 2._num*(bx*sxy + by*syy + bz*syz)*by &
-    + 2._num*(bx*sxz + by*syz + bz*szz)*bz
+    calc_wbdotb = 2._num*(&
+      (bx*sxx + by*sxy + bz*sxz)*bx &
+    + (bx*sxy + by*syy + bz*syz)*by &
+    + (bx*sxz + by*syz + bz*szz)*bz)
     RETURN
   END
 
   REAL(num) FUNCTION calc_wb2(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
     ! Calculates |WB|^2
     REAL(num), INTENT(IN) :: bx, by, bz, sxx, sxy, sxz, syy, syz, szz
-    calc_wb2 = &
-      4._num*(bx*sxx + by*sxy + bz*sxz)**2 &
-    + 4._num*(bx*sxy + by*syy + bz*syz)**2 &
-    + 4._num*(bx*sxz + by*syz + bz*szz)**2
+    calc_wb2 = 4._num*(&
+      (bx*sxx + by*sxy + bz*sxz)**2 &
+    + (bx*sxy + by*syy + bz*syz)**2 &
+    + (bx*sxz + by*syz + bz*szz)**2)
     RETURN
   END
 
@@ -157,7 +161,7 @@ CONTAINS
     ! Calculates viscosity parameter
     REAL(num), INTENT(IN) :: mB2
     REAL(num) :: xi2
-    xi2 = brag_alpha**2 * mB2
+    xi2 = (brag_alpha**2) * mB2
     brag_visc_coeff = visc3*(6._num/5._num*xi2 + 2.23_num)/(2.23_num + 4.03_num*xi2 + xi2**2)
     RETURN
   END
@@ -168,7 +172,7 @@ CONTAINS
 
 
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
-    REAL(num) :: traceW2
+    REAL(num) :: traceW2, iso_heating_coeff
 #ifdef BRAGINSKII_VISCOSITY
     REAL(num) :: mB2, brag_visc1, brag_visc2
     REAL(num) :: a, b, wbdotb, wb2
@@ -182,22 +186,22 @@ CONTAINS
           CALL calculate_stress(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
 
           IF (isotropic) THEN
-            traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2*(sxy**2 + sxz**2 + syz**2))
 #ifndef BRAGINSKII_VISCOSITY
 #ifndef SWITCHING_VISCOSITY
-            ! Heating array is offset, hence ix+1, etc
-            heating_array(ix+1, iy+1, iz+1) = visc3/2.0_num*traceW2
+            iso_heating_coeff = visc3
 #endif
 #endif
 #ifdef BRAGINSKII_VISCOSITY
             mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
-            brag_visc1 = brag_visc_coeff(4.0_num*mB2)
-            heating_array(ix+1, iy+1, iz+1) = brag_visc1/2.0_num*traceW2
+            iso_heating_coeff = brag_visc_coeff(4.0_num*mB2)
 #endif
+            traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2._num*(sxy**2 + sxz**2 + syz**2))
+            ! Heating array is offset, hence ix+1, etc
+            heating_array(ix+1, iy+1, iz+1) = iso_heating_coeff/2.0_num*traceW2
           ELSE
 #ifdef BRAGINSKII_VISCOSITY
             mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
-            IF (mB2 /= 0.0_num) THEN
+            IF (mB2 > none_zero) THEN
               brag_visc1 = brag_visc_coeff(4.0_num*mB2)
               brag_visc2 = brag_visc_coeff(mB2)
               a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(4._num*mB2**2)
