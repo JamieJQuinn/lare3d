@@ -134,7 +134,7 @@ CONTAINS
     ! energy during the remap step. This missing energy can be added back into
     ! the simulation as a uniform heating. Setting rke to true turns on this
     ! addition.
-    rke = .FALSE.
+    rke = .TRUE.
 
     ! The code to choose the initial conditions. The valid choices are
     ! IC_NEW     - Use set_initial_conditions in "initial_conditions.f90" to
@@ -182,7 +182,7 @@ CONTAINS
     neutral_gas = .TRUE.
 
     ! Braginskii viscosity parameters
-    brag_alpha = 6._num/B0
+    brag_alpha = 6._num
   END SUBROUTINE control_variables
 
 

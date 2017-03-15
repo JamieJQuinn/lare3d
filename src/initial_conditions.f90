@@ -35,7 +35,7 @@ CONTAINS
     by = 0.0_num
     bz = 0.0_num
     rho = 1.0_num
-    energy = 1.0_num
+    energy = 1.0_num*(gamma - 1.0_num)
 
     DO ix = 0, nx
       bx(ix,:,:) = xb(ix)
