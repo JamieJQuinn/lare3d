@@ -13,9 +13,9 @@ while getopts "n:m:" flag; do
 done
 
 if [ "$machine" == "euclid" ]; then
-	n_proc=15
-	export PATH=/usr/lib64/openmpi/bin:$PATH
-  mpi_opts+=' --mca pml ob1'
+  n_proc=15
+  export PATH=/usr/lib64/openmpi/bin:$PATH
+  mpi_opts+='--mca pml ob1'
 elif [ "$machine" == "office" ]; then
   n_proc=4
 else 
