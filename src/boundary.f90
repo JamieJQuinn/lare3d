@@ -288,8 +288,8 @@ CONTAINS
     twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      DO iy = 0, ny
-        DO ix = 0, nx
+      DO iy = -2, ny+2
+        DO ix = -2, nx+2
           vx(ix,iy,-2:0) = -yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
           vy(ix,iy,-2:0) =  xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
         END DO
@@ -298,8 +298,8 @@ CONTAINS
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      DO iy = 0, ny
-        DO ix = 0, nx
+      DO iy = -2, ny+2
+        DO ix = -2, nx+2
           vx(ix,iy,nz:nz+2) =  yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
           vy(ix,iy,nz:nz+2) = -xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
         END DO
@@ -348,8 +348,8 @@ CONTAINS
     twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time + dt2 - 2.0_num)))
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      DO iy = 0, ny
-        DO ix = 0, nx
+      DO iy = -2, ny+2
+        DO ix = -2, nx+2
           vx1(ix,iy,-2:0) = -yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
           vy1(ix,iy,-2:0) =  xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
         END DO
@@ -358,8 +358,8 @@ CONTAINS
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      DO iy = 0, ny
-        DO ix = 0, nx
+      DO iy = -2, ny+2
+        DO ix = -2, nx+2
           vx1(ix,iy,nz:nz+2) =  yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
           vy1(ix,iy,nz:nz+2) = -xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
         END DO
