@@ -34,20 +34,16 @@ CONTAINS
 
     ! Magnitude of B squared
     mB2 = bx**2 + by**2 + bz**2
+    mB2 = MAX(mB2, none_zero)
 
     ! Viscosity parameters
     brag_visc1 = brag_visc_coeff(4.0_num*mB2)
     brag_visc2 = brag_visc_coeff(mB2)
 
     ! Braginskii tensor coefficients
-    a = 0._num
-    b = 0._num
-    c = 0._num
-    IF (mB2 > none_zero) THEN
-      a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(2._num*mB2**2)
-      b = (brag_visc1 - visc3)/(2._num*mB2)
-      c = (brag_visc2 - brag_visc1)/(mB2)
-    END IF
+    a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/MAX(2._num*mB2**2, none_zero)
+    b = (brag_visc1 - visc3)/(2._num*mB2)
+    c = (brag_visc2 - brag_visc1)/(mB2)
     d = brag_visc1
 
     ! Calculate B tensor product B
@@ -201,18 +197,17 @@ CONTAINS
           ELSE
 #ifdef BRAGINSKII_VISCOSITY
             mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
-            IF (mB2 > none_zero) THEN
-              brag_visc1 = brag_visc_coeff(4.0_num*mB2)
-              brag_visc2 = brag_visc_coeff(mB2)
-              a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/(4._num*mB2**2)
-              b = (brag_visc2 - brag_visc1)/(mB2)
-              wbdotb = calc_wbdotb(bx(ix, iy, iz), by(ix, iy, iz), bz(ix, iy, iz), &
-                sxx, sxy, sxz, syy, syz, szz)
-              wb2 = calc_wb2(bx(ix, iy, iz), by(ix, iy, iz), bz(ix, iy, iz), &
-                sxx, sxy, sxz, syy, syz, szz)
+            mB2 = MAX(mB2, none_zero)
+            brag_visc1 = brag_visc_coeff(4.0_num*mB2)
+            brag_visc2 = brag_visc_coeff(mB2)
+            a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/MAX(4._num*mB2**2, none_zero)
+            b = (brag_visc2 - brag_visc1)/mB2
+            wbdotb = calc_wbdotb(bx(ix, iy, iz), by(ix, iy, iz), bz(ix, iy, iz), &
+              sxx, sxy, sxz, syy, syz, szz)
+            wb2 = calc_wb2(bx(ix, iy, iz), by(ix, iy, iz), bz(ix, iy, iz), &
+              sxx, sxy, sxz, syy, syz, szz)
 
-              heating_array(ix+1, iy+1, iz+1) = a*wbdotb**2 + b*wb2
-            END IF
+            heating_array(ix+1, iy+1, iz+1) = a*wbdotb**2 + b*wb2
 #endif
           END IF
         END DO
