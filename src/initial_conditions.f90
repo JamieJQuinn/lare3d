@@ -37,13 +37,13 @@ CONTAINS
     rho = 1.0_num
     energy = 1.0_num*(gamma - 1.0_num)
 
-    DO ix = 0, nx
+    DO ix = -2, nx + 2
       bx(ix,:,:) = xb(ix)
     END DO
-    DO iy = 0, ny
+    DO iy = -2, ny + 2
       by(:,iy,:) = yb(iy)
     END DO
-    DO iz = 0, nz
+    DO iz = -2, nz + 2
       bz(:,:,iz) = -2.0_num*zb(iz)
     END DO
 
