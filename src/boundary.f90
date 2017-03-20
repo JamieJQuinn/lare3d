@@ -235,7 +235,8 @@ CONTAINS
   !****************************************************************************
 
   REAL(num) FUNCTION velocity_coeff(twist, x, y)
-    REAL(num) :: twist, x, y, in_circle_flag, r
+    REAL(num), INTENT(IN) :: twist, x, y
+    REAL(num) :: in_circle_flag, r
 
     r = SQRT(x**2 + y**2)
 
@@ -249,7 +250,7 @@ CONTAINS
     !END IF
 
     velocity_coeff = twist*SIN(pi*r)*in_circle_flag
-    IF (r /= 0.0_num) THEN
+    IF (r > none_zero) THEN
       velocity_coeff = velocity_coeff/r
     END IF
     RETURN
