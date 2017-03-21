@@ -162,10 +162,9 @@ CONTAINS
     RETURN
   END
 
-  SUBROUTINE calculate_heating(heating_array, isotropic)
-    LOGICAL :: isotropic
+  SUBROUTINE calculate_viscous_heating(heating_array, isotropic)
+    LOGICAL, INTENT(IN) :: isotropic
     REAL(num), DIMENSION(:, :, :), INTENT(OUT) :: heating_array
-
 
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
     REAL(num) :: traceW2, iso_heating_coeff
@@ -213,9 +212,9 @@ CONTAINS
         END DO
       END DO
     END DO
-  END SUBROUTINE calculate_heating
+  END SUBROUTINE calculate_viscous_heating
 
-  SUBROUTINE calculate_stress(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
+  SUBROUTINE calculate_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
     REAL(num), INTENT(OUT) :: sxx, sxy, sxz, syy, syz, szz
     INTEGER, INTENT(IN) :: ix, iy, iz
 
@@ -225,14 +224,10 @@ CONTAINS
     REAL(num) :: dvxdz, dvydz, dvzdz
     REAL(num) :: dvxy, dvxz, dvyz
     INTEGER :: ixm, iym, izm
-    INTEGER :: ixp, iyp, izp
 
     izm = iz - 1
-    izp = iz + 1
     iym = iy - 1
-    iyp = iy + 1
     ixm = ix - 1
-    ixp = ix + 1
 
     ! vx at Bx(i,j,k)
     vxb  = (vx(ix ,iy ,iz ) + vx(ix ,iym,iz ) &
@@ -318,6 +313,6 @@ CONTAINS
     syz = dvyz * 0.5_num
 
     RETURN
-  END SUBROUTINE calculate_stress
+  END SUBROUTINE calculate_strain_rate
 
 END MODULE anisotropic_viscosity
