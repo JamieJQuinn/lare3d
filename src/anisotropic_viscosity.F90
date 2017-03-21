@@ -170,15 +170,16 @@ CONTAINS
     REAL(num) :: traceW2, iso_heating_coeff
 #ifdef BRAGINSKII_VISCOSITY
     REAL(num) :: mB2, brag_visc1, brag_visc2
+    REAL(num) :: bx_cell, by_cell, bz_cell
     REAL(num) :: a, b, wbdotb, wb2
 #endif
 
     heating_array = 0.0_num
 
-    DO iz = 0, nz
-      DO iy = 0, ny
-        DO ix = 0, nx
-          CALL calculate_stress(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
+    DO iz = 1, nz
+      DO iy = 1, ny
+        DO ix = 1, nx
+          CALL calculate_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
 
           IF (isotropic) THEN
 #ifndef BRAGINSKII_VISCOSITY
@@ -187,26 +188,31 @@ CONTAINS
 #endif
 #endif
 #ifdef BRAGINSKII_VISCOSITY
-            mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
+            bx_cell = (bx(ix,iy,iz) + bx(ixm,iy ,iz )) * 0.5_num
+            by_cell = (by(ix,iy,iz) + by(ix ,iym,iz )) * 0.5_num
+            bz_cell = (bz(ix,iy,iz) + bz(ix ,iy ,izm)) * 0.5_num
+            mB2 = bx_cell**2 + by_cell**2 + bz_cell**2
             iso_heating_coeff = brag_visc_coeff(4.0_num*mB2)
 #endif
             traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2._num*(sxy**2 + sxz**2 + syz**2))
-            ! Heating array is offset, hence ix+1, etc
-            heating_array(ix+1, iy+1, iz+1) = iso_heating_coeff/2.0_num*traceW2
+            heating_array(ix, iy, iz) = iso_heating_coeff * traceW2 * 0.5_num
           ELSE
 #ifdef BRAGINSKII_VISCOSITY
-            mB2 = bx(ix, iy, iz)**2 + by(ix, iy, iz)**2 + bz(ix, iy, iz)**2
+            bx_cell = (bx(ix,iy,iz) + bx(ixm,iy ,iz )) * 0.5_num
+            by_cell = (by(ix,iy,iz) + by(ix ,iym,iz )) * 0.5_num
+            bz_cell = (bz(ix,iy,iz) + bz(ix ,iy ,izm)) * 0.5_num
+            mB2 = bx_cell**2 + by_cell**2 + bz_cell**2
             mB2 = MAX(mB2, none_zero)
             brag_visc1 = brag_visc_coeff(4.0_num*mB2)
             brag_visc2 = brag_visc_coeff(mB2)
-            a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2)/MAX(4._num*mB2**2, none_zero)
-            b = (brag_visc2 - brag_visc1)/mB2
-            wbdotb = calc_wbdotb(bx(ix, iy, iz), by(ix, iy, iz), bz(ix, iy, iz), &
+            a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2) / MAX(4._num*mB2**2, none_zero)
+            b = (brag_visc2 - brag_visc1) / mB2
+            wbdotb = calc_wbdotb(bx_cell, by_cell, bz_cell, &
               sxx, sxy, sxz, syy, syz, szz)
-            wb2 = calc_wb2(bx(ix, iy, iz), by(ix, iy, iz), bz(ix, iy, iz), &
+            wb2 = calc_wb2(bx_cell, by_cell, bz_cell, &
               sxx, sxy, sxz, syy, syz, szz)
 
-            heating_array(ix+1, iy+1, iz+1) = a*wbdotb**2 + b*wb2
+            heating_array(ix, iy, iz) = a*wbdotb**2 + b*wb2
 #endif
           END IF
         END DO
