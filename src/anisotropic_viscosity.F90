@@ -10,7 +10,7 @@ MODULE anisotropic_viscosity
 
   PRIVATE
 
-  PUBLIC :: add_braginskii_stress, calculate_heating
+  PUBLIC :: add_braginskii_stress, calculate_viscous_heating
 
 CONTAINS
 
@@ -172,6 +172,7 @@ CONTAINS
     REAL(num) :: mB2, brag_visc1, brag_visc2
     REAL(num) :: bx_cell, by_cell, bz_cell
     REAL(num) :: a, b, wbdotb, wb2
+    INTEGER :: ixm, iym, izm
 #endif
 
     heating_array = 0.0_num
@@ -179,6 +180,10 @@ CONTAINS
     DO iz = 1, nz
       DO iy = 1, ny
         DO ix = 1, nx
+          izm = iz - 1
+          iym = iy - 1
+          ixm = ix - 1
+
           CALL calculate_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
 
           IF (isotropic) THEN
