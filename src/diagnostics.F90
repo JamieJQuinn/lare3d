@@ -428,33 +428,29 @@ CONTAINS
     IF (dump_mask(20)) THEN
       varname = 'Isotropic_Viscous_Heating'
       units = 'J/s'
-      dims = global_dims + 1
+      dims = global_dims
 
-      IF (ALLOCATED(array)) DEALLOCATE(array)
-      ALLOCATE(array(0:nx,0:ny,0:nz))
-      CALL calculate_heating(array, .TRUE.)
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      CALL calculate_viscous_heating(array, .TRUE.)
 
       CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
           'Fluid/' // TRIM(varname), TRIM(units), dims, &
-          c_stagger_vertex, 'grid', array, &
-          node_distribution, nodeng_subarray, convert)
-      DEALLOCATE(array)
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
     END IF
 
     IF (dump_mask(21)) THEN
       varname = 'Anisotropic_Viscous_Heating'
       units = 'J/s'
-      dims = global_dims + 1
+      dims = global_dims
 
-      IF (ALLOCATED(array)) DEALLOCATE(array)
-      ALLOCATE(array(0:nx,0:ny,0:nz))
-      CALL calculate_heating(array, .FALSE.)
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      CALL calculate_viscous_heating(array, .FALSE.)
 
       CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
           'Fluid/' // TRIM(varname), TRIM(units), dims, &
-          c_stagger_vertex, 'grid', array, &
-          node_distribution, nodeng_subarray, convert)
-      DEALLOCATE(array)
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
     END IF
 
     IF (ALLOCATED(array)) DEALLOCATE(array)
