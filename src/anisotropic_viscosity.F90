@@ -10,7 +10,7 @@ MODULE anisotropic_viscosity
 
   PRIVATE
 
-  PUBLIC :: add_braginskii_stress, calculate_viscous_heating
+  PUBLIC :: add_braginskii_stress, calculate_viscous_heating, add_switching_stress
 
 CONTAINS
 
@@ -90,11 +90,11 @@ CONTAINS
     sxx, sxy, sxz, syy, syz, szz,&
     bx, by, bz)
 
-    REAL(num), INTENT(OUT) :: qxx, qxy, qxz, qyy, qyz, qzz
+    REAL(num), INTENT(INOUT) :: qxx, qxy, qxz, qyy, qyz, qzz
     REAL(num), INTENT(IN) :: sxx, sxy, sxz, syy, syz, szz
     REAL(num), INTENT(IN) :: bx, by, bz
 
-    REAL(num) :: mB2, a0, a, s, wbdotb
+    REAL(num) :: mB2, s, wbdotb
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
     REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
 
@@ -107,21 +107,16 @@ CONTAINS
     btxz = bx*bz
     btyz = by*bz
 
-    wbdotb = &
-        (bx*sxx + by*sxy + bz*sxz)*bx &
-      + (bx*sxy + by*syy + bz*syz)*by &
-      + (bx*sxz + by*syz + bz*szz)*bz
+    wbdotb = calc_wbdotb(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
 
-    a0 = 1
-    a = a0*mB2
-    !s = ?
+    s = calc_switching(mB2)
 
-    bsxx = visc3*((1-s**2)*sxx + s**2/mB2**2*wbdotb*(3*btxx - mB2)/2.0_num)
-    bsxy = visc3*((1-s**2)*sxy + s**2/mB2**2*wbdotb*(3*btxy - mB2)/2.0_num)
-    bsxz = visc3*((1-s**2)*sxz + s**2/mB2**2*wbdotb*(3*btxz - mB2)/2.0_num)
-    bsyy = visc3*((1-s**2)*syy + s**2/mB2**2*wbdotb*(3*btyy - mB2)/2.0_num)
-    bsyz = visc3*((1-s**2)*syz + s**2/mB2**2*wbdotb*(3*btyz - mB2)/2.0_num)
-    bszz = visc3*((1-s**2)*szz + s**2/mB2**2*wbdotb*(3*btzz - mB2)/2.0_num)
+    bsxx = visc3*((1.0_num-s**2)*sxx + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btxx - mB2)/2.0_num)
+    bsxy = visc3*((1.0_num-s**2)*sxy + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btxy - mB2)/2.0_num)
+    bsxz = visc3*((1.0_num-s**2)*sxz + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btxz - mB2)/2.0_num)
+    bsyy = visc3*((1.0_num-s**2)*syy + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btyy - mB2)/2.0_num)
+    bsyz = visc3*((1.0_num-s**2)*syz + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btyz - mB2)/2.0_num)
+    bszz = visc3*((1.0_num-s**2)*szz + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btzz - mB2)/2.0_num)
 
     qxx = qxx + bsxx
     qyy = qyy + bsyy
@@ -132,6 +127,51 @@ CONTAINS
 
     RETURN
   END SUBROUTINE
+
+  REAL(num) FUNCTION calc_switching(mB2)
+    ! evaluates interpolation function
+    REAL(num), INTENT(IN) :: mB2
+    REAL(num) :: a
+
+    ! specify dependence of concentration param a on mag field
+    a = brag_alpha**2 * mB2
+
+    IF (a < 0.1_num) THEN
+      calc_switching = 0.0_num
+    ELSE IF (a > 0.1_num .AND. a < 2.0_num) THEN
+      calc_switching = &
+        -0.1053464561e-1_num*a**3 &
+        +0.3160393684e-2_num*a**2 &
+        +.3308402887_num*a &
+        -0.3310509816e-1_num
+    ELSE IF (a > 2.0_num .AND. a < 5.0_num) THEN
+      calc_switching = &
+         0.6347434291e-2_num*a**3 &
+        -0.9813208574e-1_num*a**2 &
+        +.5334252475_num*a &
+        -.1681617374_num
+    ELSE IF (a > 5.0_num .AND. a < 12.0_num) THEN
+      calc_switching = &
+         0.1251265283e-3_num*a**3 &
+        -0.4797469303e-2_num*a**2 &
+        +0.6675216532e-1_num*a &
+        +.6096267329_num
+    ELSE IF (a < 30.0_num) THEN
+      calc_switching = &
+         0.5424338620e-5_num*a**3 &
+        -0.4881904758e-3_num*a**2 &
+        +0.1504081939e-1_num*a &
+        +.8164721166_num
+    ELSE
+      calc_switching = 1.0_num
+    END IF
+
+    ! Ensure switching stays between 0 & 1
+    calc_switching = MIN(calc_switching, 1.0_num)
+    calc_switching = MAX(calc_switching, 0.0_num)
+
+    RETURN
+  END
 
   REAL(num) FUNCTION calc_wbdotb(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
     ! Calculates (WB) dot B
@@ -172,7 +212,10 @@ CONTAINS
     REAL(num) :: mB2, brag_visc1, brag_visc2
     REAL(num) :: bx_cell, by_cell, bz_cell
     REAL(num) :: a, b, wbdotb, wb2
-    INTEGER :: ixm, iym, izm
+#endif
+#ifdef SWITCHING_VISCOSITY
+    REAL(num) :: mB2, wbdotb
+    REAL(num) :: bx_cell, by_cell, bz_cell
 #endif
 
     heating_array = 0.0_num
@@ -180,38 +223,28 @@ CONTAINS
     DO iz = 1, nz
       DO iy = 1, ny
         DO ix = 1, nx
-          izm = iz - 1
-          iym = iy - 1
-          ixm = ix - 1
-
           CALL calculate_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
 
           IF (isotropic) THEN
-#ifndef BRAGINSKII_VISCOSITY
-#ifndef SWITCHING_VISCOSITY
             iso_heating_coeff = visc3
-#endif
-#endif
 #ifdef BRAGINSKII_VISCOSITY
-            bx_cell = (bx(ix,iy,iz) + bx(ixm,iy ,iz )) * 0.5_num
-            by_cell = (by(ix,iy,iz) + by(ix ,iym,iz )) * 0.5_num
-            bz_cell = (bz(ix,iy,iz) + bz(ix ,iy ,izm)) * 0.5_num
-            mB2 = bx_cell**2 + by_cell**2 + bz_cell**2
-            iso_heating_coeff = brag_visc_coeff(4.0_num*mB2)
+            iso_heating_coeff = brag_visc_coeff(4.0_num*calculate_mB2(ix, iy, iz))
+#endif
+#ifdef SWITCHING_VISCOSITY
+            iso_heating_coeff = (1.0_num - calc_switching(calculate_mB2(ix, iy, iz)))*visc3
 #endif
             traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2._num*(sxy**2 + sxz**2 + syz**2))
             heating_array(ix, iy, iz) = iso_heating_coeff * traceW2 * 0.5_num
           ELSE
 #ifdef BRAGINSKII_VISCOSITY
-            bx_cell = (bx(ix,iy,iz) + bx(ixm,iy ,iz )) * 0.5_num
-            by_cell = (by(ix,iy,iz) + by(ix ,iym,iz )) * 0.5_num
-            bz_cell = (bz(ix,iy,iz) + bz(ix ,iy ,izm)) * 0.5_num
-            mB2 = bx_cell**2 + by_cell**2 + bz_cell**2
-            mB2 = MAX(mB2, none_zero)
+            bx_cell = (bx(ix,iy,iz) + bx(ix-1,iy  ,iz  )) * 0.5_num
+            by_cell = (by(ix,iy,iz) + by(ix  ,iy-1,iz  )) * 0.5_num
+            bz_cell = (bz(ix,iy,iz) + bz(ix  ,iy  ,iz-1)) * 0.5_num
+            mB2 = calculate_mB2(ix, iy, iz)
             brag_visc1 = brag_visc_coeff(4.0_num*mB2)
             brag_visc2 = brag_visc_coeff(mB2)
             a = (3._num*visc3 + brag_visc1 - 4._num*brag_visc2) / MAX(4._num*mB2**2, none_zero)
-            b = (brag_visc2 - brag_visc1) / mB2
+            b = (brag_visc2 - brag_visc1) / MAX(mB2, none_zero)
             wbdotb = calc_wbdotb(bx_cell, by_cell, bz_cell, &
               sxx, sxy, sxz, syy, syz, szz)
             wb2 = calc_wb2(bx_cell, by_cell, bz_cell, &
@@ -219,11 +252,33 @@ CONTAINS
 
             heating_array(ix, iy, iz) = a*wbdotb**2 + b*wb2
 #endif
+#ifdef SWITCHING_VISCOSITY
+            bx_cell = (bx(ix,iy,iz) + bx(ix-1,iy  ,iz  )) * 0.5_num
+            by_cell = (by(ix,iy,iz) + by(ix  ,iy-1,iz  )) * 0.5_num
+            bz_cell = (bz(ix,iy,iz) + bz(ix  ,iy  ,iz-1)) * 0.5_num
+            mB2 = calculate_mB2(ix, iy, iz)
+            wbdotb = calc_wbdotb(bx_cell, by_cell, bz_cell, &
+              sxx, sxy, sxz, syy, syz, szz)
+
+            heating_array(ix, iy, iz) = 0.75_num * visc3 * calc_switching(mB2)**4 &
+              / MAX(mB2**2, none_zero) * wbdotb**2
+#endif
           END IF
         END DO
       END DO
     END DO
   END SUBROUTINE calculate_viscous_heating
+
+  REAL(num) FUNCTION calculate_mB2(ix, iy, iz)
+    INTEGER, INTENT(IN) :: ix, iy, iz
+    REAL(num) :: bx_cell, by_cell, bz_cell
+
+    bx_cell = (bx(ix,iy,iz) + bx(ix-1,iy  ,iz  )) * 0.5_num
+    by_cell = (by(ix,iy,iz) + by(ix  ,iy-1,iz  )) * 0.5_num
+    bz_cell = (bz(ix,iy,iz) + bz(ix  ,iy  ,iz-1)) * 0.5_num
+    calculate_mB2 = bx_cell**2 + by_cell**2 + bz_cell**2
+    RETURN
+  END
 
   SUBROUTINE calculate_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
     REAL(num), INTENT(OUT) :: sxx, sxy, sxz, syy, syz, szz
