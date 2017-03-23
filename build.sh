@@ -2,14 +2,17 @@
 machine='office'
 n_grid_points='false'
 braginskii='false'
+switching='false'
 output='true'
 defines=''
 mode=''
 
-while getopts "bdom:p:" flag; do
+while getopts "bsdom:p:" flag; do
   case "${flag}" in
     # Enable braginskii visc
     b) braginskii='true' ;;
+    # Enable Switching visc
+    s) switching='true' ;;
     # Disable output
     o) output='false' ;;
     # Enable debug
@@ -25,6 +28,10 @@ if [ "$braginskii" == 'true' ]; then
   defines+=' -DBRAGINSKII_VISCOSITY'
 fi
 
+if [ "$switching" == 'true' ]; then
+  defines+=' -DSWITCHING_VISCOSITY'
+fi
+
 if [ "$output" == 'false' ]; then
   defines+=' -DNO_IO'
 fi
@@ -36,7 +43,7 @@ if [ "$machine" == "euclid" ]; then
 elif [ "$machine" == "office" ]; then
   n_proc=4
   compiler='gfortran'
-else 
+else
   echo "Error: No machine specified"
   exit
 fi
