@@ -19,12 +19,13 @@ if [ "$machine" == "euclid" ]; then
 elif [ "$machine" == "office" ]; then
   n_proc=4
 else 
-  echo "Error: No machine specified"
-  exit
+  if [ "$n_proc_arg" != '' ]; then
+    n_proc=$n_proc_arg
+  else
+    echo "Error: No machine or number of nodes specified"
+    exit
+  fi
 fi
 
-if [ "$n_proc_arg" != '' ]; then
-  n_proc=$n_proc_arg
-fi
 
 time mpirun -np $n_proc $mpi_opts bin/lare3d

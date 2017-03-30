@@ -6,6 +6,8 @@ switching='false'
 output='true'
 defines=''
 mode=''
+compiler=''
+mpif90='mpif90'
 
 while getopts "bsdom:p:" flag; do
   case "${flag}" in
@@ -37,19 +39,18 @@ if [ "$output" == 'false' ]; then
 fi
 
 if [ "$machine" == "euclid" ]; then
-  n_proc=10
   export PATH=/usr/lib64/openmpi/bin:$PATH
   compiler='gfortran'
-elif [ "$machine" == "office" ]; then
-  n_proc=4
-  compiler='gfortran'
+elif [ "$machine" == "archie" ]; then
+  compiler='intel'
+  mpif90='mpiifort'
 else
-  echo "Error: No machine specified"
-  exit
+  compiler='gfortran'
+  echo "Error: No machine specified, building with gfortran"
 fi
 
 if [ "$n_grid_points" != 'false' ]; then
   sed -i -e 's/\(n[xyz]_global = \)[0-9]*/\1'${n_grid_points}'/' src/control.f90
 fi
 
-make -j $n_proc COMPILER=$compiler DEFINE="$defines" MODE="$mode"
+make MPIF90=$mpif90 COMPILER=$compiler DEFINE="$defines" MODE="$mode"
