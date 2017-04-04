@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 build_state_file='bin/build_state'
-machine='office'
+machine=''
 n_grid_points='false'
 braginskii='false'
 switching='false'
@@ -45,6 +45,9 @@ elif [ "$machine" == "archie" ]; then
   module load compilers/intel/17.0.1
   compiler='intel'
   mpif90='mpiifort'
+elif [ "$machine" != "" ]; then
+  compiler='gfortran'
+  echo "Machine specified but no special conditions, using gfortran"
 else
   compiler='gfortran'
   echo "Error: No machine specified, building with gfortran"
