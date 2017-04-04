@@ -431,7 +431,13 @@ CONTAINS
       dims = global_dims
 
       IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
-      CALL calculate_viscous_heating(array, .TRUE.)
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            array(ix, iy, iz) = calc_iso_visc_heat_at(ix,iy,iz)
+          END DO
+        END DO
+      END DO
 
       CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
           'Fluid/' // TRIM(varname), TRIM(units), dims, &
@@ -445,7 +451,13 @@ CONTAINS
       dims = global_dims
 
       IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
-      CALL calculate_viscous_heating(array, .FALSE.)
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            array(ix, iy, iz) = calc_aniso_visc_heat_at(ix,iy,iz)
+          END DO
+        END DO
+      END DO
 
       CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
           'Fluid/' // TRIM(varname), TRIM(units), dims, &
