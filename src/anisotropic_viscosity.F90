@@ -96,7 +96,7 @@ CONTAINS
     REAL(num), INTENT(IN) :: sxx, sxy, sxz, syy, syz, szz
     REAL(num), INTENT(IN) :: bx, by, bz
 
-    REAL(num) :: mB2, s, wbdotb
+    REAL(num) :: mB2, s2, wbdotb
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
     REAL(num) :: btxx, btxy, btxz, btyy, btyz, btzz
 
@@ -111,14 +111,14 @@ CONTAINS
 
     wbdotb = calc_wbdotb(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
 
-    s = calc_switching(mB2)
+    s2 = calc_switching2(mB2)
 
-    bsxx = visc3*((1.0_num-s**2)*sxx + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btxx - mB2)/2.0_num)
-    bsxy = visc3*((1.0_num-s**2)*sxy + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btxy - mB2)/2.0_num)
-    bsxz = visc3*((1.0_num-s**2)*sxz + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btxz - mB2)/2.0_num)
-    bsyy = visc3*((1.0_num-s**2)*syy + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btyy - mB2)/2.0_num)
-    bsyz = visc3*((1.0_num-s**2)*syz + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btyz - mB2)/2.0_num)
-    bszz = visc3*((1.0_num-s**2)*szz + s**2/MAX(mB2**2, none_zero)*wbdotb*(3*btzz - mB2)/2.0_num)
+    bsxx = visc3*((1.0_num-s2)*sxx + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btxx - mB2)/2.0_num)
+    bsxy = visc3*((1.0_num-s2)*sxy + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btxy - mB2)/2.0_num)
+    bsxz = visc3*((1.0_num-s2)*sxz + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btxz - mB2)/2.0_num)
+    bsyy = visc3*((1.0_num-s2)*syy + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btyy - mB2)/2.0_num)
+    bsyz = visc3*((1.0_num-s2)*syz + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btyz - mB2)/2.0_num)
+    bszz = visc3*((1.0_num-s2)*szz + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btzz - mB2)/2.0_num)
 
     qxx = qxx + bsxx
     qyy = qyy + bsyy
@@ -130,7 +130,7 @@ CONTAINS
     RETURN
   END SUBROUTINE
 
-  REAL(num) FUNCTION calc_switching(mB2)
+  REAL(num) FUNCTION calc_switching2(mB2)
     ! evaluates interpolation function
     REAL(num), INTENT(IN) :: mB2
     REAL(num) :: a
@@ -138,39 +138,44 @@ CONTAINS
     ! specify dependence of concentration param a on mag field
     a = brag_alpha**2 * mB2
 
-    IF (a < 0.1_num) THEN
-      calc_switching = 0.0_num
-    ELSE IF (a > 0.1_num .AND. a < 2.0_num) THEN
-      calc_switching = &
-        -0.1053464561e-1_num*a**3 &
-        +0.3160393684e-2_num*a**2 &
-        +.3308402887_num*a &
-        -0.3310509816e-1_num
-    ELSE IF (a > 2.0_num .AND. a < 5.0_num) THEN
-      calc_switching = &
-         0.6347434291e-2_num*a**3 &
-        -0.9813208574e-1_num*a**2 &
-        +.5334252475_num*a &
-        -.1681617374_num
-    ELSE IF (a > 5.0_num .AND. a < 12.0_num) THEN
-      calc_switching = &
-         0.1251265283e-3_num*a**3 &
-        -0.4797469303e-2_num*a**2 &
-        +0.6675216532e-1_num*a &
-        +.6096267329_num
-    ELSE IF (a < 30.0_num) THEN
-      calc_switching = &
-         0.5424338620e-5_num*a**3 &
-        -0.4881904758e-3_num*a**2 &
-        +0.1504081939e-1_num*a &
-        +.8164721166_num
+    IF (a < 0.5051_num) THEN
+      calc_switching2 = &
+        0.203207286957195e-1_num*a+0.843989591678155e-1_num*a**3
+    ELSE IF (a > 0.5051_num .AND. a < 1.54_num) THEN
+      calc_switching2 = &
+        0.159559056317913e-1_num-0.744480634040214e-1_num*a &
+        +.187623821223007_num*a**2-0.394206285197758e-1_num*a**3
+    ELSE IF (a > 1.54_num .AND. a < 3.011_num) THEN
+      calc_switching2 = &
+        -0.887980204109068e-1_num+.129618026285783_num*a &
+        +0.551133733724845e-1_num*a**2-0.107387134006150e-1_num*a**3
+    ELSE IF (a > 3.011_num .AND. a < 6.071_num) THEN
+      calc_switching2 = &
+        -0.498332905576744_num+.537656769397807_num*a &
+        -0.804026489164638e-1_num*a**2+0.426361387592081e-2_num*a**3
+    ELSE IF (a > 6.071_num .AND. a < 12.97_num) THEN
+      calc_switching2 = &
+        0.432999470914707_num+0.774365207593949e-1_num*a &
+        -0.459631575250207e-2_num*a**2+0.101403742282107e-3_num*a**3
+    ELSE IF (a > 12.97_num .AND. a < 22.59_num) THEN
+      calc_switching2 = &
+        0.609014168122852_num+0.367237920294194e-1_num*a &
+        -0.145732356052247e-2_num*a**2+0.207305941973063e-4_num*a**3
+    ELSE IF (a > 22.59_num .AND. a < 29.41_num) THEN
+      calc_switching2 = &
+        0.852464153339503_num+0.439311670189453e-2_num*a &
+        -0.261294335846660e-4_num*a**2-3.87808147946726e-7_num*a**3
+    ELSE IF (a < 29.41_num) THEN
+      calc_switching2 = &
+        0.816478868872687_num+0.806383596073046e-2_num*a &
+        -0.150941377101699e-3_num*a**2+0.102681208912720e-5_num*a**3
     ELSE
-      calc_switching = 1.0_num
+      calc_switching2 = 1.0_num
     END IF
 
     ! Ensure switching stays between 0 & 1
-    calc_switching = MIN(calc_switching, 1.0_num)
-    calc_switching = MAX(calc_switching, 0.0_num)
+    calc_switching2 = MIN(calc_switching2, 1.0_num)
+    calc_switching2 = MAX(calc_switching2, 0.0_num)
 
     RETURN
   END
@@ -281,7 +286,7 @@ CONTAINS
     iso_heating_coeff = brag_visc_coeff(4.0_num*calc_mB2(ix, iy, iz))
 #endif
 #ifdef SWITCHING_VISCOSITY
-    iso_heating_coeff = (1.0_num - calc_switching(calc_mB2(ix, iy, iz)))*visc3
+    iso_heating_coeff = (1.0_num - calc_switching2(calc_mB2(ix, iy, iz)))*visc3
 #endif
     CALL calc_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
     traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2._num*(sxy**2 + sxz**2 + syz**2))
@@ -321,7 +326,7 @@ CONTAINS
     calc_aniso_visc_heating_at = a*wbdotb**2 + b*wb2
 #endif
 #ifdef SWITCHING_VISCOSITY
-    calc_aniso_visc_heating_at = 0.75_num * visc3 * calc_switching(mB2)**4 &
+    calc_aniso_visc_heating_at = 0.75_num * visc3 * calc_switching2(mB2)**2 &
       / MAX(mB2**2, none_zero) * wbdotb**2
 #endif
     RETURN
