@@ -38,6 +38,9 @@ CONTAINS
     REAL(num) :: en_ke = 0.0_num, en_int = 0.0_num, en_b = 0.0_num
     REAL(num), ALLOCATABLE, SAVE :: t_out(:)
     REAL(dbl), ALLOCATABLE, SAVE :: var_local(:,:), var_sum(:,:)
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+    REAL(dbl), ALLOCATABLE, SAVE :: visc_local(:,:), visc_max(:,:)
+#endif
     LOGICAL, SAVE :: first = .TRUE.
 
 #ifdef NO_IO
@@ -52,9 +55,19 @@ CONTAINS
     ! Do every (history_frequency) steps
     IF (MOD(step, history_frequency) == 0 .OR. last_call) THEN
       IF (first) THEN
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+        ALLOCATE(var_local(en_nvars-3,dump_frequency))
+        ALLOCATE(visc_local(2,dump_frequency))
+#else
         ALLOCATE(var_local(en_nvars-1,dump_frequency))
+#endif
         IF (rank == 0) THEN
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+          ALLOCATE(visc_max(2,dump_frequency))
+          ALLOCATE(var_sum(en_nvars-3,dump_frequency))
+#else
           ALLOCATE(var_sum(en_nvars-1,dump_frequency))
+#endif
           ALLOCATE(t_out(dump_frequency))
         END IF
         first = .FALSE.
@@ -68,17 +81,34 @@ CONTAINS
       var_local(3,ndump) = en_int
       var_local(4,ndump) = total_visc_heating
       var_local(5,ndump) = total_ohmic_heating
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+      var_local(6,ndump) = calc_total_visc_heating(.TRUE.)
+      var_local(7,ndump) = calc_total_visc_heating(.FALSE.)
+      visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
+      visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
+#endif
 
       IF (ndump == dump_frequency .OR. last_call) THEN
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-3) * ndump, &
+            MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
+        CALL MPI_REDUCE(visc_local, visc_max, 2 * ndump, &
+            MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
+#else
         CALL MPI_REDUCE(var_local, var_sum, (en_nvars-1) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
+#endif
 
         visc_heating_updated = .TRUE.
 
         IF (rank == 0) THEN
           visc_heating = var_sum(4,ndump)
           DO i = 1, ndump
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+            WRITE(en_unit) t_out(i), REAL(var_sum(:,i), num), REAL(visc_max(:,i), num)
+#else
             WRITE(en_unit) t_out(i), REAL(var_sum(:,i), num)
+#endif
           END DO
         END IF
 
@@ -97,6 +127,9 @@ CONTAINS
       IF (ALLOCATED(var_local)) DEALLOCATE(var_local)
       IF (ALLOCATED(var_sum)) DEALLOCATE(var_sum)
       IF (ALLOCATED(t_out)) DEALLOCATE(t_out)
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+      IF (ALLOCATED(visc_max)) DEALLOCATE(visc_max)
+#endif
     END IF
 
   END SUBROUTINE output_routines
@@ -434,7 +467,7 @@ CONTAINS
       DO iz = 1, nz
         DO iy = 1, ny
           DO ix = 1, nx
-            array(ix, iy, iz) = calc_iso_visc_heat_at(ix,iy,iz)
+            array(ix, iy, iz) = calc_iso_visc_heating_at(ix,iy,iz)
           END DO
         END DO
       END DO
@@ -454,7 +487,7 @@ CONTAINS
       DO iz = 1, nz
         DO iy = 1, ny
           DO ix = 1, nx
-            array(ix, iy, iz) = calc_aniso_visc_heat_at(ix,iy,iz)
+            array(ix, iy, iz) = calc_aniso_visc_heating_at(ix,iy,iz)
           END DO
         END DO
       END DO
@@ -762,8 +795,14 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+    varnames(7) = 'heating_iso_visc'
+    varnames(8) = 'heating_aniso_visc'
+    varnames(9) = 'max_heating_iso_visc'
+    varnames(10) = 'max_heating_iso_visc'
+#endif
 
-    header_length = 3 + 7 * 4 + en_nvars * c_id_length
+    header_length = 3 + 8 * 4 + en_nvars * c_id_length
     ! Write history file header if not appending to file
     WRITE(en_unit) c_history_magic, c_history_version, c_history_revision
     WRITE(en_unit) c_endianness

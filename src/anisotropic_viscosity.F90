@@ -11,7 +11,8 @@ MODULE anisotropic_viscosity
   PRIVATE
 
   PUBLIC :: add_braginskii_stress, add_switching_stress, &
-    calc_iso_visc_heat_at, calc_aniso_visc_heat_at
+    calc_iso_visc_heating_at, calc_aniso_visc_heating_at, &
+    calc_total_visc_heating, calc_max_visc_heating
 
 CONTAINS
 
@@ -198,12 +199,79 @@ CONTAINS
     ! Calculates viscosity parameter
     REAL(num), INTENT(IN) :: mB2
     REAL(num) :: xi2
+
     xi2 = (brag_alpha**2) * mB2
     brag_visc_coeff = visc3*(6._num/5._num*xi2 + 2.23_num)/(2.23_num + 4.03_num*xi2 + xi2**2)
+
     RETURN
   END
 
-  REAL(num) FUNCTION calc_iso_visc_heat_at(ix, iy, iz)
+  REAL(num) FUNCTION calc_max_visc_heating(isotropic)
+    LOGICAL, INTENT(IN) :: isotropic
+    REAL(NUM) :: heating, max_heating
+
+    max_heating = 0.0_num
+    heating = 0.0_num
+
+    IF (isotropic) THEN
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            heating = calc_iso_visc_heating_at(ix,iy,iz)
+            IF (max_heating < heating) THEN
+              max_heating = heating
+            END IF
+          END DO
+        END DO
+      END DO
+    ELSE
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            heating = calc_aniso_visc_heating_at(ix,iy,iz)
+            IF (max_heating < heating) THEN
+              max_heating = heating
+            END IF
+          END DO
+        END DO
+      END DO
+    END IF
+
+    calc_max_visc_heating = max_heating
+
+    RETURN
+  END FUNCTION
+
+  REAL(num) FUNCTION calc_total_visc_heating(isotropic)
+    LOGICAL, INTENT(IN) :: isotropic
+    REAL(NUM) :: heating
+
+    heating = 0.0_num
+
+    IF (isotropic) THEN
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            heating = heating + calc_iso_visc_heating_at(ix,iy,iz)
+          END DO
+        END DO
+      END DO
+    ELSE
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            heating = heating + calc_aniso_visc_heating_at(ix,iy,iz)
+          END DO
+        END DO
+      END DO
+    END IF
+
+    calc_total_visc_heating = heating
+
+    RETURN
+  END FUNCTION
+
+  REAL(num) FUNCTION calc_iso_visc_heating_at(ix, iy, iz)
     INTEGER, INTENT(IN) :: ix, iy, iz
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
     REAL(num) :: traceW2, iso_heating_coeff
@@ -217,11 +285,11 @@ CONTAINS
 #endif
     CALL calc_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
     traceW2 = 4.0_num*(sxx**2 + syy**2 + szz**2 + 2._num*(sxy**2 + sxz**2 + syz**2))
-    calc_iso_visc_heat_at = iso_heating_coeff * traceW2 * 0.5_num
+    calc_iso_visc_heating_at = iso_heating_coeff * traceW2 * 0.5_num
     RETURN
   END FUNCTION
 
-  REAL(num) FUNCTION calc_aniso_visc_heat_at(ix, iy, iz)
+  REAL(num) FUNCTION calc_aniso_visc_heating_at(ix, iy, iz)
     INTEGER, INTENT(IN) :: ix, iy, iz
     REAL(num) :: sxx, syy, szz, sxy, sxz, syz
     REAL(num) :: mB2, wbdotb
@@ -231,6 +299,8 @@ CONTAINS
     REAL(num) :: brag_visc1, brag_visc2
     REAL(num) :: a, b, wb2
 #endif
+
+    calc_aniso_visc_heating_at = 0.0_num
 
     CALL calc_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
 
@@ -248,10 +318,10 @@ CONTAINS
     wb2 = calc_wb2(bx_cell, by_cell, bz_cell, &
       sxx, sxy, sxz, syy, syz, szz)
 
-    calc_aniso_visc_heat_at = a*wbdotb**2 + b*wb2
+    calc_aniso_visc_heating_at = a*wbdotb**2 + b*wb2
 #endif
 #ifdef SWITCHING_VISCOSITY
-    calc_aniso_visc_heat_at = 0.75_num * visc3 * calc_switching(mB2)**4 &
+    calc_aniso_visc_heating_at = 0.75_num * visc3 * calc_switching(mB2)**4 &
       / MAX(mB2**2, none_zero) * wbdotb**2
 #endif
     RETURN

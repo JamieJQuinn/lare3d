@@ -6,15 +6,16 @@ braginskii='false'
 switching='false'
 output='true'
 mode=''
+defines=''
 
 while getopts "bsdom:p:" flag; do
   case "${flag}" in
     # Enable braginskii visc
-    b) braginskii='true' ;;
+    b) defines+=' -DBRAGINSKII_VISCOSITY' ;;
     # Enable Switching visc
-    s) switching='true' ;;
-    # Disable output
-    o) output='false' ;;
+    s) defines+=' -DSWITCHING_VISCOSITY' ;;
+    # Output continuous viscous heating
+    o) defines+=' -DOUTPUT_CONTINUOUS_VISC_HEATING' ;;
     # Enable debug
     d) mode='debug' ;;
     # Set machine
@@ -24,17 +25,7 @@ while getopts "bsdom:p:" flag; do
   esac
 done
 
-defines=''
-if [ "$braginskii" == 'true' ]; then
-  defines+=' -DBRAGINSKII_VISCOSITY'
-elif [ "$switching" == 'true' ]; then
-  defines+=' -DSWITCHING_VISCOSITY'
-fi
-
-if [ "$output" == 'false' ]; then
-  defines+=' -DNO_IO'
-fi
-
+# Sort out machine specific settings
 compiler=''
 mpif90='mpif90'
 if [ "$machine" == "euclid" ]; then
@@ -53,12 +44,15 @@ else
   echo "Error: No machine specified, building with gfortran"
 fi
 
+# Replace grid points in control with inputs
 if [ "$n_grid_points" != 'false' ]; then
   sed -i -e 's/\(n[xyz]_global = \)[0-9]*/\1'${n_grid_points}'/' src/control.f90
 fi
 
+# Build
 make MPIF90=$mpif90 COMPILER=$compiler DEFINE="$defines" MODE="$mode"
 
+# Create state file and print some relevant build facts
 echo "" > $build_state_file
 echo "$defines" >> $build_state_file
 echo "$mode" >> $build_state_file
