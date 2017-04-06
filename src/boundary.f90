@@ -254,7 +254,7 @@ CONTAINS
       velocity_coeff = velocity_coeff/r
     END IF
     RETURN
-  END
+  END FUNCTION
 
   SUBROUTINE velocity_bcs
 

@@ -178,7 +178,7 @@ CONTAINS
     calc_switching2 = MAX(calc_switching2, 0.0_num)
 
     RETURN
-  END
+  END FUNCTION
 
   REAL(num) FUNCTION calc_wbdotb(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
     ! Calculates (WB) dot B
@@ -188,7 +188,7 @@ CONTAINS
     + (bx*sxy + by*syy + bz*syz)*by &
     + (bx*sxz + by*syz + bz*szz)*bz)
     RETURN
-  END
+  END FUNCTION
 
   REAL(num) FUNCTION calc_wb2(bx, by, bz, sxx, sxy, sxz, syy, syz, szz)
     ! Calculates |WB|^2
@@ -198,7 +198,7 @@ CONTAINS
     + (bx*sxy + by*syy + bz*syz)**2 &
     + (bx*sxz + by*syz + bz*szz)**2)
     RETURN
-  END
+  END FUNCTION
 
   REAL(num) FUNCTION brag_visc_coeff(mB2)
     ! Calculates viscosity parameter
@@ -209,7 +209,7 @@ CONTAINS
     brag_visc_coeff = visc3*(6._num/5._num*xi2 + 2.23_num)/(2.23_num + 4.03_num*xi2 + xi2**2)
 
     RETURN
-  END
+  END FUNCTION
 
   REAL(num) FUNCTION calc_max_visc_heating(isotropic)
     LOGICAL, INTENT(IN) :: isotropic
@@ -341,7 +341,7 @@ CONTAINS
     bz_cell = (bz(ix,iy,iz) + bz(ix  ,iy  ,iz-1)) * 0.5_num
     calc_mB2 = bx_cell**2 + by_cell**2 + bz_cell**2
     RETURN
-  END
+  END FUNCTION
 
   SUBROUTINE calc_strain_rate(sxx, sxy, sxz, syy, syz, szz, ix, iy, iz)
     REAL(num), INTENT(OUT) :: sxx, sxy, sxz, syy, syz, szz
