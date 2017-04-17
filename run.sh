@@ -31,10 +31,10 @@ else
 fi
 
 # Run
-time mpirun -np $n_proc $mpi_opts bin/lare3d
+#time mpirun -np $n_proc $mpi_opts bin/lare3d
 # Include build info in data
 cp bin/build_state Data
-if [ $output_dir != '' ]; then
+if [ "$output_dir" != '' ]; then
   # Move data
   mkdir -p $output_dir
   rm $output_dir/*
