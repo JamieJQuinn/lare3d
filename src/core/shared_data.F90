@@ -182,7 +182,7 @@ MODULE shared_data
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-  INTEGER, PARAMETER :: en_nvars = 10
+  INTEGER, PARAMETER :: en_nvars = 8
 #else
   INTEGER, PARAMETER :: en_nvars = 6
 #endif

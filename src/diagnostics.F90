@@ -82,8 +82,6 @@ CONTAINS
       var_local(4,ndump) = total_visc_heating
       var_local(5,ndump) = total_ohmic_heating
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-      var_local(6,ndump) = calc_total_visc_heating(.TRUE.)
-      var_local(7,ndump) = calc_total_visc_heating(.FALSE.)
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
 #endif
@@ -796,10 +794,8 @@ CONTAINS
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-    varnames(7) = 'heating_iso_visc'
-    varnames(8) = 'heating_aniso_visc'
-    varnames(9) = 'max_heating_iso_visc'
-    varnames(10) = 'max_heating_iso_visc'
+    varnames(7) = 'max_heating_iso_visc'
+    varnames(8) = 'max_heating_aniso_visc'
 #endif
 
     header_length = 3 + 8 * 4 + en_nvars * c_id_length
