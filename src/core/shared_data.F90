@@ -152,6 +152,9 @@ MODULE shared_data
   REAL(num) :: f_bar, t_bar, tr, ionise_pot, r_bar
   REAL(num) :: eta_bar
 
+  ! Braginskii viscosity
+  REAL(num) :: brag_alpha
+
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)
   INTEGER, DIMENSION(:), ALLOCATABLE :: cell_nx_mins, cell_nx_maxs

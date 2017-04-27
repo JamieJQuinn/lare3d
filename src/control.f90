@@ -181,6 +181,8 @@ CONTAINS
     ! This flag is ignored for all other EOS choices.
     neutral_gas = .TRUE.
 
+    ! Braginskii viscosity parameters
+    brag_alpha = 6._num
   END SUBROUTINE control_variables
 
 

@@ -173,7 +173,7 @@ SRCFILES = boundary.f90 conduct.f90 control.f90 diagnostics.F90 \
   initial_conditions.f90 lagran.F90 lare3d.f90 mpi_routines.F90 \
   mpiboundary.f90 neutral.f90 normalise.f90 openboundary.f90 remap.f90 \
   setup.F90 shared_data.F90 version_data.F90 welcome.f90 xremap.f90 yremap.f90 \
-  zremap.f90
+  zremap.f90 anisotropic_viscosity.F90
 
 OBJFILES := $(SRCFILES:.f90=.o)
 OBJFILES := $(OBJFILES:.F90=.o)
@@ -241,13 +241,15 @@ FORCE:
 
 # All the dependencies
 
+anisotropic_viscosity.o: anisotropic_viscosity.F90 shared_data.o
 boundary.o: boundary.f90 mpiboundary.o shared_data.o
 conduct.o: conduct.f90 boundary.o neutral.o shared_data.o
 control.o: control.f90 normalise.o shared_data.o
 diagnostics.o: diagnostics.F90 boundary.o conduct.o shared_data.o \
-  version_data.o $(SDFMOD)
+  version_data.o $(SDFMOD) anisotropic_viscosity.o
 initial_conditions.o: initial_conditions.f90 neutral.o shared_data.o
-lagran.o: lagran.F90 boundary.o conduct.o neutral.o shared_data.o
+lagran.o: lagran.F90 boundary.o conduct.o neutral.o shared_data.o \
+  anisotropic_viscosity.o
 lare3d.o: lare3d.f90 boundary.o control.o diagnostics.o initial_conditions.o \
   lagran.o mpi_routines.o neutral.o normalise.o openboundary.o remap.o setup.o \
   shared_data.o welcome.o
