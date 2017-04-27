@@ -151,6 +151,16 @@ DEFINES := $(DEFINE)
 # Uncomment to enable the MPI error handler which is useful for debugging
 #DEFINES += $(D)MPI_DEBUG
 
+# Uncomment to enable continuous output of viscous heating rate
+# Automatically detects if anisotropic viscosity detected
+#DEFINES += $(D)OUTPUT_CONTINUOUS_VISC_HEATING
+
+# Uncomment to enable braginskii viscosity model
+#DEFINES += $(D)BRAGINSKII_VISCOSITY
+
+# Uncomment to enable parallel-isotropic switching viscosity model
+#DEFINES += $(D)SWITCHING_VISCOSITY
+
 
 # --------------------------------------------------
 # Shouldn't need to touch below here
