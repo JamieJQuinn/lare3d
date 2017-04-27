@@ -214,6 +214,14 @@ CONTAINS
   REAL(num) FUNCTION calc_max_visc_heating(isotropic)
     LOGICAL, INTENT(IN) :: isotropic
     REAL(NUM) :: heating, max_heating
+    LOGICAL :: anisotropic_viscosity_enabled
+    anisotropic_viscosity_enabled = .FALSE.
+#ifdef BRAGINSKII_VISCOSITY
+    anisotropic_viscosity_enabled = .TRUE.
+#endif
+#ifdef SWITCHING_VISCOSITY
+    anisotropic_viscosity_enabled = .TRUE.
+#endif
 
     max_heating = 0.0_num
     heating = 0.0_num
@@ -230,16 +238,19 @@ CONTAINS
         END DO
       END DO
     ELSE
-      DO iz = 1, nz
-        DO iy = 1, ny
-          DO ix = 1, nx
-            heating = calc_aniso_visc_heating_at(ix,iy,iz)
-            IF (max_heating < heating) THEN
-              max_heating = heating
-            END IF
+      ! Only calculate if either anisotropic viscosity is enabled
+      IF (anisotropic_viscosity_enabled) THEN
+        DO iz = 1, nz
+          DO iy = 1, ny
+            DO ix = 1, nx
+              heating = calc_aniso_visc_heating_at(ix,iy,iz)
+              IF (max_heating < heating) THEN
+                max_heating = heating
+              END IF
+            END DO
           END DO
         END DO
-      END DO
+      END IF
     END IF
 
     calc_max_visc_heating = max_heating
