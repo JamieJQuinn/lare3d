@@ -799,7 +799,7 @@ CONTAINS
     varnames(8) = 'max_heating_aniso_visc'
 #endif
 
-    header_length = 3 + 7 * 4 + en_nvars * c_id_length
+    header_length = 3 + 8 * 4 + en_nvars * c_id_length
     ! Write history file header if not appending to file
     WRITE(en_unit) c_history_magic, c_history_version, c_history_revision
     WRITE(en_unit) c_endianness
