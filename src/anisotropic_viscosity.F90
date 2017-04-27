@@ -12,7 +12,7 @@ MODULE anisotropic_viscosity
 
   PUBLIC :: add_braginskii_stress, add_switching_stress, &
     calc_iso_visc_heating_at, calc_aniso_visc_heating_at, &
-    calc_total_visc_heating, calc_max_visc_heating
+    calc_max_visc_heating
 
 CONTAINS
 
@@ -254,35 +254,6 @@ CONTAINS
     END IF
 
     calc_max_visc_heating = max_heating
-
-    RETURN
-  END FUNCTION
-
-  REAL(num) FUNCTION calc_total_visc_heating(isotropic)
-    LOGICAL, INTENT(IN) :: isotropic
-    REAL(NUM) :: heating
-
-    heating = 0.0_num
-
-    IF (isotropic) THEN
-      DO iz = 1, nz
-        DO iy = 1, ny
-          DO ix = 1, nx
-            heating = heating + calc_iso_visc_heating_at(ix,iy,iz)
-          END DO
-        END DO
-      END DO
-    ELSE
-      DO iz = 1, nz
-        DO iy = 1, ny
-          DO ix = 1, nx
-            heating = heating + calc_aniso_visc_heating_at(ix,iy,iz)
-          END DO
-        END DO
-      END DO
-    END IF
-
-    calc_total_visc_heating = heating
 
     RETURN
   END FUNCTION
