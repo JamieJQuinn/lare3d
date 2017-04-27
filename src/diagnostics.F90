@@ -10,6 +10,7 @@ MODULE diagnostics
   USE conduct
   USE sdf
   USE version_data
+  USE anisotropic_viscosity
 
   IMPLICIT NONE
 
@@ -422,6 +423,46 @@ CONTAINS
           'Current/' // TRIM(varname), TRIM(units), dims, &
           c_stagger_vertex, 'grid', jz_r, &
           node_distribution, nodeng_subarray, convert)
+    END IF
+
+    IF (dump_mask(20)) THEN
+      varname = 'Isotropic_Viscous_Heating'
+      units = 'J/s'
+      dims = global_dims
+
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            array(ix, iy, iz) = calc_iso_visc_heating_at(ix,iy,iz)
+          END DO
+        END DO
+      END DO
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Fluid/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
+    END IF
+
+    IF (dump_mask(21)) THEN
+      varname = 'Anisotropic_Viscous_Heating'
+      units = 'J/s'
+      dims = global_dims
+
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            array(ix, iy, iz) = calc_aniso_visc_heating_at(ix,iy,iz)
+          END DO
+        END DO
+      END DO
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Fluid/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
     END IF
 
     IF (ALLOCATED(array)) DEALLOCATE(array)
