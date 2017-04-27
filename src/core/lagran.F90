@@ -8,6 +8,7 @@ MODULE lagran
   USE boundary
   USE neutral
   USE conduct
+  USE anisotropic_viscosity
 
   IMPLICIT NONE
 
@@ -615,12 +616,31 @@ CONTAINS
           qyz(ix,iy,iz) = syz * (L2 * rho(ix,iy,iz) &
               * (visc1 * cf + L2 * visc2 * ABS(syz)))
 #endif
+
+#ifndef SWITCHING_VISCOSITY
+#ifndef BRAGINSKII_VISCOSITY
           qxx(ix,iy,iz) = qxx(ix,iy,iz) + 2.0_num * sxx * rho(ix,iy,iz) * visc3
           qyy(ix,iy,iz) = qyy(ix,iy,iz) + 2.0_num * syy * rho(ix,iy,iz) * visc3
           qzz(ix,iy,iz) = qzz(ix,iy,iz) + 2.0_num * szz * rho(ix,iy,iz) * visc3
           qxy(ix,iy,iz) = qxy(ix,iy,iz) + 2.0_num * sxy * rho(ix,iy,iz) * visc3
           qxz(ix,iy,iz) = qxz(ix,iy,iz) + 2.0_num * sxz * rho(ix,iy,iz) * visc3
           qyz(ix,iy,iz) = qyz(ix,iy,iz) + 2.0_num * syz * rho(ix,iy,iz) * visc3
+#endif
+#endif
+
+#ifdef BRAGINSKII_VISCOSITY
+          CALL add_braginskii_stress(&
+            qxx(ix,iy,iz), qxy(ix,iy,iz), qxz(ix,iy,iz), qyy(ix,iy,iz), qyz(ix,iy,iz), qzz(ix,iy,iz),&
+            sxx, sxy, sxz, syy, syz, szz,&
+            bx1(ix,iy,iz), by1(ix,iy,iz), bz1(ix,iy,iz))
+#endif
+
+#ifdef SWITCHING_VISCOSITY
+          CALL add_switching_stress(&
+            qxx(ix,iy,iz), qxy(ix,iy,iz), qxz(ix,iy,iz), qyy(ix,iy,iz), qyz(ix,iy,iz), qzz(ix,iy,iz),&
+            sxx, sxy, sxz, syy, syz, szz,&
+            bx1(ix,iy,iz), by1(ix,iy,iz), bz1(ix,iy,iz))
+#endif
 
           visc_heat(ix,iy,iz) = &
                 qxy(ix,iy,iz) * dvxy  + qxz(ix,iy,iz) * dvxz &
