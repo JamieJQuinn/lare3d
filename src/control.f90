@@ -75,7 +75,7 @@ CONTAINS
     visc2 = 0.0_num
 
     ! Real viscosity expressed as the inverse Reynolds number
-    visc3 = 0.0_num
+    visc3 = 1.0e-4_num
 
     ! Set these constants to manually override the domain decomposition.
     ! If either constant is set to zero then the code will try to automatically
