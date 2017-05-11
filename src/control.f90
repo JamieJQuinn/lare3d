@@ -68,7 +68,7 @@ CONTAINS
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 10.0_num
+    t_end = 300.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -200,7 +200,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 1.0_num
+    dt_snapshots = 100.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
