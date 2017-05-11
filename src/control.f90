@@ -25,7 +25,7 @@ CONTAINS
     ! in SI units
 
     ! Gamma is the ratio of specific heat capacities
-    gamma = 1.4_num
+    gamma = 5.0_num*third
 
     ! Average mass of an ion in proton masses
     ! The code assumes a single ion species with this mass
@@ -36,14 +36,17 @@ CONTAINS
     ! normalisation used for your initial conditions. Strictly only needed for
     ! non-ideal MHD terms.
 
+    ! Normalisation constants from Bareford & Hood 2015
+    ! DOI: 10.1098/rsta.2014.0266 
+
     ! Magnetic field normalisation in Tesla
-    B0 = 0.03_num
+    B0 = 0.005_num
 
     ! Length normalisation in m
-    L0 = 180.e3_num
+    L0 = 1.e6_num
 
     ! Density normalisation in kg / m^3
-    RHO0 = 1.67e-4_num
+    RHO0 = 1.67e-12_num
 
   END SUBROUTINE user_normalisation
 
@@ -56,9 +59,9 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 64
-    ny_global = 64
-    nz_global = 64
+    nx_global = 81
+    ny_global = 81
+    nz_global = 160
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
@@ -68,8 +71,8 @@ CONTAINS
     t_end = 10.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
-    visc1 = 0.1_num
-    visc2 = 0.5_num
+    visc1 = 0.0_num
+    visc2 = 0.0_num
 
     ! Real viscosity expressed as the inverse Reynolds number
     visc3 = 0.0_num
@@ -82,28 +85,28 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = 0.0_num
-    x_max = 100.0_num
+    x_min = -3.0_num
+    x_max =  3.0_num
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = 0.0_num
-    y_max = 100.0_num
+    y_min = -3.0_num
+    y_max =  3.0_num
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -20.0_num
-    z_max = 80.0_num
+    z_min = -3.0_num
+    z_max =  3.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
     ! Turn on or off the resistive parts of the MHD equations
-    resistive_mhd = .FALSE.
+    resistive_mhd = .TRUE.
 
     ! The background resistivity expressed as the inverse Lundquist number
-    eta_background = 0.0_num
+    eta_background = 1.0e-4_num
 
     ! The critical current for triggering anomalous resistivity
     ! and the resistivity when above the critical current.
@@ -134,7 +137,7 @@ CONTAINS
     ! energy during the remap step. This missing energy can be added back into
     ! the simulation as a uniform heating. Setting rke to true turns on this
     ! addition.
-    rke = .FALSE.
+    rke = .TRUE.
 
     ! The code to choose the initial conditions. The valid choices are
     ! IC_NEW     - Use set_initial_conditions in "initial_conditions.f90" to
@@ -155,10 +158,10 @@ CONTAINS
     ! BC_PERIODIC - Periodic boundary conditions
     ! BC_OPEN     - Reimann far-field characteristic boundary conditions
     ! BC_OTHER    - Other boundary conditions specified in "boundary.f90"
-    xbc_min = BC_PERIODIC
-    xbc_max = BC_PERIODIC
-    ybc_min = BC_PERIODIC
-    ybc_max = BC_PERIODIC
+    xbc_min = BC_OTHER
+    xbc_max = BC_OTHER
+    ybc_min = BC_OTHER
+    ybc_max = BC_OTHER
     zbc_min = BC_OTHER
     zbc_max = BC_OTHER
 
@@ -197,7 +200,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 10.0_num
+    dt_snapshots = 1.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
@@ -231,6 +234,9 @@ CONTAINS
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
+
+    dump_mask(20) = .TRUE.
+    dump_mask(21) = .FALSE.
 
   END SUBROUTINE set_output_dumps
 
