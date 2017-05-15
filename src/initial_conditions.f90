@@ -52,6 +52,7 @@ CONTAINS
     by = 0.0_num
     bz = 0.0_num
 
+    ! Energy must be tiny initially to avoid negative energy in first stages
     energy = 1.0e-50_num
     rho = 1.0_num
     grav = 0.0_num
