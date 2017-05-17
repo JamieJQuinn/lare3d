@@ -185,7 +185,8 @@ CONTAINS
     neutral_gas = .TRUE.
 
     ! Braginskii viscosity parameters
-    brag_alpha = 6._num
+    ! Typical coronal value
+    brag_alpha = 1.6021765e-10_num*0.75_num/RHO0
   END SUBROUTINE control_variables
 
 
