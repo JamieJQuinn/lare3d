@@ -193,8 +193,10 @@ CONTAINS
     neutral_gas = .TRUE.
 
     ! Anisotropic viscosity parameters
-    ! Typical coronal value
-    brag_alpha = 1.6021765e-10_num*0.75_num/RHO0
+    ! Typical coronal value calculated from cyc_freq * collision_time / B0
+    ! collision time from Braginskii 1965
+    ! Coronal temp taken to be 1e6 K
+    brag_alpha = 1.201632375e-4_num/RHO0
     switching_param = brag_alpha**2
   END SUBROUTINE control_variables
 
