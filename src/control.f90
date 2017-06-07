@@ -37,7 +37,7 @@ CONTAINS
     ! non-ideal MHD terms.
 
     ! Normalisation constants from Bareford & Hood 2015
-    ! DOI: 10.1098/rsta.2014.0266 
+    ! DOI: 10.1098/rsta.2014.0266
 
     ! Magnetic field normalisation in Tesla
     B0 = 0.005_num
@@ -63,13 +63,13 @@ CONTAINS
     !ny_global = 81
     !nz_global = 160
 
-    nx_global = 161
-    ny_global = 161
-    nz_global = 320
+    !nx_global = 161
+    !ny_global = 161
+    !nz_global = 320
 
-    !nx_global = 321
-    !ny_global = 321
-    !nz_global = 641
+    nx_global = 321
+    ny_global = 321
+    nz_global = 641
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
@@ -212,7 +212,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 100.0_num
+    dt_snapshots = 25.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
@@ -248,7 +248,7 @@ CONTAINS
     IF (resistive_mhd) dump_mask(16) = .TRUE.
 
     dump_mask(20) = .TRUE.
-    dump_mask(21) = .FALSE.
+    dump_mask(21) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 
