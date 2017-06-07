@@ -140,7 +140,7 @@ CONTAINS
     REAL(num) :: a
 
     ! specify dependence of concentration param a on mag field
-    a = brag_alpha**2 * mB2
+    a = switching_param * mB2
 
     IF (a < 0.5051_num) THEN
       calc_switching2 = &

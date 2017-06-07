@@ -181,8 +181,9 @@ CONTAINS
     ! This flag is ignored for all other EOS choices.
     neutral_gas = .TRUE.
 
-    ! Braginskii viscosity parameters
+    ! Anisotropic viscosity parameters
     brag_alpha = 6._num
+    switching_param = brag_alpha**2
   END SUBROUTINE control_variables
 
 
