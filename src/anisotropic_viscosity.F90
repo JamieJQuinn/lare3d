@@ -113,12 +113,12 @@ CONTAINS
 
     s2 = calc_switching2(mB2)
 
-    bsxx = visc3*((1.0_num-s2)*sxx + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btxx - mB2)/2.0_num)
-    bsxy = visc3*((1.0_num-s2)*sxy + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btxy - mB2)/2.0_num)
-    bsxz = visc3*((1.0_num-s2)*sxz + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btxz - mB2)/2.0_num)
-    bsyy = visc3*((1.0_num-s2)*syy + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btyy - mB2)/2.0_num)
-    bsyz = visc3*((1.0_num-s2)*syz + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btyz - mB2)/2.0_num)
-    bszz = visc3*((1.0_num-s2)*szz + s2/MAX(mB2**2, none_zero)*wbdotb*(3*btzz - mB2)/2.0_num)
+    bsxx = visc3*((1.0_num-s2)*sxx*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btxx - mB2*third))
+    bsyy = visc3*((1.0_num-s2)*syy*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btyy - mB2*third))
+    bszz = visc3*((1.0_num-s2)*szz*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btzz - mB2*third))
+    bsxy = visc3*((1.0_num-s2)*sxy*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btxy))
+    bsxz = visc3*((1.0_num-s2)*sxz*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btxz))
+    bsyz = visc3*((1.0_num-s2)*syz*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btyz))
 
     qxx = qxx + bsxx
     qyy = qyy + bsyy
