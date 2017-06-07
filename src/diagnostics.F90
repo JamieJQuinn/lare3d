@@ -490,6 +490,32 @@ CONTAINS
         END DO
       END DO
 
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Fluid/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
+    END IF
+
+    IF (dump_mask(22)) THEN
+      varname = 'Switching Function'
+      units = ''
+      dims = global_dims
+
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      DO iz = 1, nz
+        DO iy = 1, ny
+          DO ix = 1, nx
+            bx_cell = (bx(ix,iy,iz) + bx(ix-1,iy  ,iz  )) * 0.5_num
+            by_cell = (by(ix,iy,iz) + by(ix  ,iy-1,iz  )) * 0.5_num
+            bz_cell = (bz(ix,iy,iz) + bz(ix  ,iy  ,iz-1)) * 0.5_num
+            mB2 = calc_mB2(ix, iy, iz)
+            array(ix, iy, iz) = calc_switching2(mB2)
+          END DO
+        END DO
+      END DO
+
+
       CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
           'Fluid/' // TRIM(varname), TRIM(units), dims, &
           c_stagger_cell_centre, 'grid', array, &
