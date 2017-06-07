@@ -249,6 +249,7 @@ CONTAINS
 
     dump_mask(20) = .TRUE.
     dump_mask(21) = .TRUE.
+    dump_mask(22) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 
