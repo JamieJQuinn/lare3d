@@ -87,6 +87,10 @@ CONTAINS
     RETURN
   END SUBROUTINE add_braginskii_stress
 
+  !****************************************************************************
+  ! Add switching viscous stress to qxx, qxy, etc
+  !****************************************************************************
+
   SUBROUTINE add_switching_stress(&
     qxx, qxy, qxz, qyy, qyz, qzz,&
     sxx, sxy, sxz, syy, syz, szz,&
