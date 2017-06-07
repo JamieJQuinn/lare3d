@@ -12,7 +12,7 @@ MODULE anisotropic_viscosity
 
   PUBLIC :: add_braginskii_stress, add_switching_stress, &
     calc_iso_visc_heating_at, calc_aniso_visc_heating_at, &
-    calc_max_visc_heating
+    calc_max_visc_heating, calc_mB2, calc_switching2
 
 CONTAINS
 
