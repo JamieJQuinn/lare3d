@@ -312,7 +312,7 @@ CONTAINS
     calc_aniso_visc_heating_at = a*wbdotb**2 + b*wb2
 #endif
 #ifdef SWITCHING_VISCOSITY
-    calc_aniso_visc_heating_at = 0.75_num * visc3 * calc_switching2(mB2)**2 &
+    calc_aniso_visc_heating_at = 0.75_num * visc3 * calc_switching2(mB2) &
       / MAX(mB2**2, none_zero) * wbdotb**2
 #endif
     RETURN
