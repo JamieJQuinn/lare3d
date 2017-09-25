@@ -37,13 +37,13 @@ CONTAINS
     ! non-ideal MHD terms.
 
     ! Magnetic field normalisation in Tesla
-    B0 = 0.03_num
+    B0 = 0.13_num
 
     ! Length normalisation in m
-    L0 = 180.e3_num
+    L0 = 170.e3_num
 
     ! Density normalisation in kg / m^3
-    RHO0 = 1.67e-4_num
+    RHO0 = 2.e-4_num
 
   END SUBROUTINE user_normalisation
 
@@ -56,9 +56,9 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 64
-    ny_global = 64
-    nz_global = 64
+    nx_global = 300
+    ny_global = 300
+    nz_global = 300
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
@@ -68,11 +68,11 @@ CONTAINS
     t_end = 10.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
-    visc1 = 0.1_num
-    visc2 = 0.5_num
+    visc1 = 0.0_num
+    visc2 = 0.0_num
 
     ! Real viscosity expressed as the inverse Reynolds number
-    visc3 = 0.0_num
+    visc3 = 1.0e-2_num
 
     ! Set these constants to manually override the domain decomposition.
     ! If either constant is set to zero then the code will try to automatically
@@ -82,28 +82,28 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = 0.0_num
-    x_max = 100.0_num
+    x_min = -126.85_num*L0
+    x_max = 126.85_num*L0
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = 0.0_num
-    y_max = 100.0_num
+    y_min = -126.85_num*L0
+    y_max = 126.85_num*L0
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -20.0_num
-    z_max = 80.0_num
+    z_min = -30.0_num*L0
+    z_max = 210.45_num*L0
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
     ! Turn on or off the resistive parts of the MHD equations
-    resistive_mhd = .FALSE.
+    resistive_mhd = .TRUE.
 
     ! The background resistivity expressed as the inverse Lundquist number
-    eta_background = 0.0_num
+    eta_background = 1.0e-2_num
 
     ! The critical current for triggering anomalous resistivity
     ! and the resistivity when above the critical current.
@@ -134,7 +134,7 @@ CONTAINS
     ! energy during the remap step. This missing energy can be added back into
     ! the simulation as a uniform heating. Setting rke to true turns on this
     ! addition.
-    rke = .FALSE.
+    rke = .TRUE.
 
     ! The code to choose the initial conditions. The valid choices are
     ! IC_NEW     - Use set_initial_conditions in "initial_conditions.f90" to
@@ -155,17 +155,17 @@ CONTAINS
     ! BC_PERIODIC - Periodic boundary conditions
     ! BC_OPEN     - Reimann far-field characteristic boundary conditions
     ! BC_OTHER    - Other boundary conditions specified in "boundary.f90"
-    xbc_min = BC_PERIODIC
-    xbc_max = BC_PERIODIC
-    ybc_min = BC_PERIODIC
-    ybc_max = BC_PERIODIC
+    xbc_min = BC_OTHER
+    xbc_max = BC_OTHER
+    ybc_min = BC_OTHER
+    ybc_max = BC_OTHER
     zbc_min = BC_OTHER
     zbc_max = BC_OTHER
 
     ! Set to true to turn on routine for damped boundaries.
     ! These routines are in boundary.f90 and you should check that they
     ! actually do what you want.
-    damping = .FALSE.
+    damping = .TRUE.
 
     ! Set the equation of state. Valid choices are
     ! EOS_IDEAL - Simple ideal gas for perfectly ionised plasma
