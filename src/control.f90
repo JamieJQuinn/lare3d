@@ -25,7 +25,7 @@ CONTAINS
     ! in SI units
 
     ! Gamma is the ratio of specific heat capacities
-    gamma = 1.4_num
+    gamma = 1.67_num
 
     ! Average mass of an ion in proton masses
     ! The code assumes a single ion species with this mass
@@ -56,16 +56,16 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 300
-    ny_global = 300
-    nz_global = 300
+    nx_global = 200
+    ny_global = 200
+    nz_global = 200
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
-    nsteps = 1
+    nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 10.0_num
+    t_end = 50.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -82,20 +82,20 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = -126.85_num*L0
-    x_max = 126.85_num*L0
+    x_min = -126.85_num
+    x_max = 126.85_num
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = -126.85_num*L0
-    y_max = 126.85_num*L0
+    y_min = -126.85_num
+    y_max = 126.85_num
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -30.0_num*L0
-    z_max = 210.45_num*L0
+    z_min = -30.0_num
+    z_max = 210.45_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
@@ -155,17 +155,17 @@ CONTAINS
     ! BC_PERIODIC - Periodic boundary conditions
     ! BC_OPEN     - Reimann far-field characteristic boundary conditions
     ! BC_OTHER    - Other boundary conditions specified in "boundary.f90"
-    xbc_min = BC_OTHER
-    xbc_max = BC_OTHER
-    ybc_min = BC_OTHER
-    ybc_max = BC_OTHER
+    xbc_min = BC_PERIODIC
+    xbc_max = BC_PERIODIC
+    ybc_min = BC_PERIODIC
+    ybc_max = BC_PERIODIC
     zbc_min = BC_OTHER
     zbc_max = BC_OTHER
 
     ! Set to true to turn on routine for damped boundaries.
     ! These routines are in boundary.f90 and you should check that they
     ! actually do what you want.
-    damping = .TRUE.
+    damping = .FALSE.
 
     ! Set the equation of state. Valid choices are
     ! EOS_IDEAL - Simple ideal gas for perfectly ionised plasma
