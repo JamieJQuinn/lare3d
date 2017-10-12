@@ -94,8 +94,8 @@ CONTAINS
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -30.0_num
-    z_max = 210.45_num
+    z_min = -50.0_num
+    z_max = 80.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
