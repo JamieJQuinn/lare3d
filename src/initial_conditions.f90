@@ -35,8 +35,8 @@ CONTAINS
       z_corona          = 20._num
     REAL(num), DIMENSION(:), ALLOCATABLE :: zc_global, dzb_global, dzc_global
     REAL(num), DIMENSION(:), ALLOCATABLE :: temp_ref, rho_ref
-    REAL(num) :: r
-    REAL(num) :: r0 = 2.5_num, z0 = -25._num, alpha = 0.3_num
+    REAL(num) :: r2, buoyant_factor, pressure_def
+    REAL(num) :: r0 = 2.5_num, z0 = -25._num, alpha = 0.3_num, bFlux = 5._num
 
     ALLOCATE( zc_global(-1:nz_global+1))
     ALLOCATE(dzb_global(-1:nz_global+1))
@@ -52,21 +52,6 @@ CONTAINS
     bz = 0.0_num
 
     grav = 1._num
-
-    !DO iz = -1, nz + 1
-      !if (zb_global(iz) >= z_corona) THEN
-        !by(:,:,iz) = 0.01_num
-      !END IF
-    !END DO
-
-    DO iz = -1, nz + 1
-      DO iy = -1, ny + 1
-        DO ix = -1, nx + 1
-        
-          by(:,:,iz) = 0.01_num
-        END DO
-      END DO
-    END DO
 
     ! Fill in zc_global with the positions central to the zb_global points
     DO iz = -1, nz_global + 1
@@ -126,6 +111,50 @@ CONTAINS
       energy(:,:,iz) = temp_ref(iz1)/(gamma-1.0_num)
 
       iz1 = iz1 + 1
+    END DO
+
+    ! Fill in ambient coronal magnetic field
+    !DO iz = -1, nz + 1
+      !if (zb_global(iz) >= z_corona) THEN
+        !by(:,:,iz) = 0.01_num
+      !END IF
+    !END DO
+
+    ! Fill in By
+    DO iz = -1, nz + 1
+      DO ix = -1, nx + 1
+        r2 = (zc(iz) - z0)**2 + xc(ix)**2
+        IF (r2 <= r0**2) THEN
+          by(ix,:,iz) = bFlux * EXP(-r2/r0**2)
+        END IF
+      END DO
+    END DO
+
+    ! Fill in Bz and Bz with correct interpolation of By
+    DO iz = -1, nz + 1
+      DO ix = -1, nx + 1
+        ixp = ix+1
+        izp = iz+1
+        r2 = (zc(iz) - z0)**2 + xc(ix)**2
+        IF (r2 <= r0**2) THEN
+          bx(ix,:.iz) =  alpha * (by(ix,1,iz)+by(ixp,1,iz ) * 0.5_num * zc(iz)
+          bz(ix,:.iz) = -alpha * (by(ix,1,iz)+by(ix ,1,izp) * 0.5_num * xc(ix)
+        END IF
+      END DO
+    END DO
+
+    ! Fill in density deficit with buoyant factor
+    DO iz = -1, nz + 1
+      DO iy = -1, ny + 1
+        DO ix = -1, nx + 1
+          r2 = (zc(iz) - z0)**2 + xc(ix)**2
+          IF (r2 <= r0**2) THEN
+            pressure_def = bFlux**2 * EXP(-2*r2/r0**2) * (alpha**2 * r0**2 - 2 - 2*alpha**2 * r2)*0.25_num
+            buoyant_factor = EXP(-yc(iy)**2/(y_max - y_min)**2)
+            rho(ix,iy,iz) += buoyant_factor * pressure_def / temp(ix,iy,iz)
+          END IF
+        END DO
+      END DO
     END DO
 
     DEALLOCATE(zc_global, dzb_global, dzc_global)
