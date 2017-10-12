@@ -155,33 +155,33 @@ CONTAINS
     CALL energy_mpi
 
     IF (proc_x_min == MPI_PROC_NULL .AND. xbc_min == BC_OTHER) THEN
-      energy( 0,:,:) = 0._num
-      energy(-1,:,:) = 0._num
+      energy( 0,:,:) = energy(1,:,:)
+      energy(-1,:,:) = energy(1,:,:)
     END IF
 
     IF (proc_x_max == MPI_PROC_NULL .AND. xbc_max == BC_OTHER) THEN
-      energy(nx+1,:,:) = 0._num
-      energy(nx+2,:,:) = 0._num
+      energy(nx+1,:,:) = energy(nx,:,:)
+      energy(nx+2,:,:) = energy(nx,:,:)
     END IF
 
     IF (proc_y_min == MPI_PROC_NULL .AND. ybc_min == BC_OTHER) THEN
-      energy(:, 0,:) = 0._num
-      energy(:,-1,:) = 0._num
+      energy(:, 0,:) = energy(:,1,:)
+      energy(:,-1,:) = energy(:,1,:)
     END IF
 
     IF (proc_y_max == MPI_PROC_NULL .AND. ybc_max == BC_OTHER) THEN
-      energy(:,ny+1,:) = 0._num
-      energy(:,ny+2,:) = 0._num
+      energy(:,ny+1,:) = energy(:,ny,:)
+      energy(:,ny+2,:) = energy(:,ny,:)
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      energy(:,:, 0) = 0._num
-      energy(:,:,-1) = 0._num
+      energy(:,:, 0) = energy(:,:,1)
+      energy(:,:,-1) = energy(:,:,1)
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      energy(:,:,nz+1) = 0._num
-      energy(:,:,nz+2) = 0._num
+      energy(:,:,nz+1) = energy(:,:,nz)
+      energy(:,:,nz+2) = energy(:,:,nz)
     END IF
 
   END SUBROUTINE energy_bcs
@@ -197,33 +197,33 @@ CONTAINS
     CALL density_mpi
 
     IF (proc_x_min == MPI_PROC_NULL .AND. xbc_min == BC_OTHER) THEN
-      rho( 0,:,:) = 0._num
-      rho(-1,:,:) = 0._num
+      rho( 0,:,:) = rho(1,:,:)
+      rho(-1,:,:) = rho(1,:,:)
     END IF
 
     IF (proc_x_max == MPI_PROC_NULL .AND. xbc_max == BC_OTHER) THEN
-      rho(nx+1,:,:) = 0._num
-      rho(nx+2,:,:) = 0._num
+      rho(nx+1,:,:) = rho(nx,:,:)
+      rho(nx+2,:,:) = rho(nx,:,:)
     END IF
 
     IF (proc_y_min == MPI_PROC_NULL .AND. ybc_min == BC_OTHER) THEN
-      rho(:, 0,:) = 0._num
-      rho(:,-1,:) = 0._num
+      rho(:, 0,:) = rho(:,1,:)
+      rho(:,-1,:) = rho(:,1,:)
     END IF
 
     IF (proc_y_max == MPI_PROC_NULL .AND. ybc_max == BC_OTHER) THEN
-      rho(:,ny+1,:) = 0._num
-      rho(:,ny+2,:) = 0._num
+      rho(:,ny+1,:) = rho(:,ny,:)
+      rho(:,ny+2,:) = rho(:,ny,:)
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      rho(:,:, 0) = 0._num
-      rho(:,:,-1) = 0._num
+      rho(:,:, 0) = rho(:,:,1)
+      rho(:,:,-1) = rho(:,:,1)
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      rho(:,:,nz+1) = 0._num
-      rho(:,:,nz+2) = 0._num
+      rho(:,:,nz+1) = rho(:,:,nz)
+      rho(:,:,nz+2) = rho(:,:,nz)
     END IF
 
   END SUBROUTINE density_bcs
