@@ -35,6 +35,8 @@ CONTAINS
       z_corona          = 20._num
     REAL(num), DIMENSION(:), ALLOCATABLE :: zc_global, dzb_global, dzc_global
     REAL(num), DIMENSION(:), ALLOCATABLE :: temp_ref, rho_ref
+    REAL(num) :: r
+    REAL(num) :: r0 = 2.5_num, z0 = -25._num, alpha = 0.3_num
 
     ALLOCATE( zc_global(-1:nz_global+1))
     ALLOCATE(dzb_global(-1:nz_global+1))
@@ -50,6 +52,21 @@ CONTAINS
     bz = 0.0_num
 
     grav = 1._num
+
+    !DO iz = -1, nz + 1
+      !if (zb_global(iz) >= z_corona) THEN
+        !by(:,:,iz) = 0.01_num
+      !END IF
+    !END DO
+
+    DO iz = -1, nz + 1
+      DO iy = -1, ny + 1
+        DO ix = -1, nx + 1
+        
+          by(:,:,iz) = 0.01_num
+        END DO
+      END DO
+    END DO
 
     ! Fill in zc_global with the positions central to the zb_global points
     DO iz = -1, nz_global + 1
