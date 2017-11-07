@@ -29,7 +29,7 @@ CONTAINS
 
     ! Average mass of an ion in proton masses
     ! The code assumes a single ion species with this mass
-    mf = 1.2_num
+    mf = 1.0_num
 
     ! The equations describing the normalisation in LARE have three free
     ! parameters which must be specified by the end user. These must be the
@@ -65,14 +65,14 @@ CONTAINS
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 50.0_num
+    t_end = 500.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
     visc2 = 0.0_num
 
     ! Real viscosity expressed as the inverse Reynolds number
-    visc3 = 1.0e-2_num
+    visc3 = 1.0e-4_num
 
     ! Set these constants to manually override the domain decomposition.
     ! If either constant is set to zero then the code will try to automatically
@@ -103,7 +103,7 @@ CONTAINS
     resistive_mhd = .TRUE.
 
     ! The background resistivity expressed as the inverse Lundquist number
-    eta_background = 1.0e-2_num
+    eta_background = 1.0e-4_num
 
     ! The critical current for triggering anomalous resistivity
     ! and the resistivity when above the critical current.
