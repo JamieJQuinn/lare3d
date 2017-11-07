@@ -89,57 +89,57 @@ CONTAINS
     CALL bfield_mpi
 
     IF (proc_x_min == MPI_PROC_NULL .AND. xbc_min == BC_OTHER) THEN
-      bx(-1,:,:) = 0._num
-      bx(-2,:,:) = 0._num
-      by( 0,:,:) = 0._num
-      by(-1,:,:) = 0._num
-      bz( 0,:,:) = 0._num
-      bz(-1,:,:) = 0._num
+      bx(-1,:,:) = bx(1,:,:)
+      bx(-2,:,:) = bx(2,:,:)
+      by( 0,:,:) = by(1,:,:)
+      by(-1,:,:) = by(2,:,:)
+      bz( 0,:,:) = bz(1,:,:)
+      bz(-1,:,:) = bz(2,:,:)
     END IF
 
     IF (proc_x_max == MPI_PROC_NULL .AND. xbc_max == BC_OTHER) THEN
-      bx(nx+1,:,:) = 0._num
-      bx(nx+2,:,:) = 0._num
-      by(nx+1,:,:) = 0._num
-      by(nx+2,:,:) = 0._num
-      bz(nx+1,:,:) = 0._num
-      bz(nx+2,:,:) = 0._num
+      bx(nx+1,:,:) = bx(nx-1,:,:)
+      bx(nx+2,:,:) = bx(nx-2,:,:)
+      by(nx+1,:,:) = by(nx  ,:,:)
+      by(nx+2,:,:) = by(nx-1,:,:)
+      bz(nx+1,:,:) = bz(nx  ,:,:)
+      bz(nx+2,:,:) = bz(nx-1,:,:)
     END IF
 
     IF (proc_y_min == MPI_PROC_NULL .AND. ybc_min == BC_OTHER) THEN
-      bx(:, 0,:) = 0._num
-      bx(:,-1,:) = 0._num
-      by(:,-1,:) = 0._num
-      by(:,-2,:) = 0._num
-      bz(:, 0,:) = 0._num
-      bz(:,-1,:) = 0._num
+      bx(:, 0,:) = bx(:,1,:)
+      bx(:,-1,:) = bx(:,2,:)
+      by(:,-1,:) = by(:,1,:)
+      by(:,-2,:) = by(:,2,:)
+      bz(:, 0,:) = bz(:,1,:)
+      bz(:,-1,:) = bz(:,2,:)
     END IF
 
     IF (proc_y_max == MPI_PROC_NULL .AND. ybc_max == BC_OTHER) THEN
-      bx(:,ny+1,:) = 0._num
-      bx(:,ny+2,:) = 0._num
-      by(:,ny+1,:) = 0._num
-      by(:,ny+2,:) = 0._num
-      bz(:,ny+1,:) = 0._num
-      bz(:,ny+2,:) = 0._num
+      bx(:,ny+1,:) = bx(:,ny  ,:)
+      bx(:,ny+2,:) = bx(:,ny-1,:)
+      by(:,ny+1,:) = by(:,ny-1,:)
+      by(:,ny+2,:) = by(:,ny-2,:)
+      bz(:,ny+1,:) = bz(:,ny  ,:)
+      bz(:,ny+2,:) = bz(:,ny-1,:)
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
-      bx(:,:, 0) = 0._num
-      bx(:,:,-1) = 0._num
-      by(:,:, 0) = 0._num
-      by(:,:,-1) = 0._num
-      bz(:,:,-1) = 0._num
-      bz(:,:,-2) = 0._num
+      bx(:,:, 0) = bx(:,:,1)
+      bx(:,:,-1) = bx(:,:,2)
+      by(:,:, 0) = by(:,:,1)
+      by(:,:,-1) = by(:,:,2)
+      bz(:,:,-1) = bz(:,:,1)
+      bz(:,:,-2) = bz(:,:,2)
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      bx(:,:,nz+1) = 0._num
-      bx(:,:,nz+2) = 0._num
-      by(:,:,nz+1) = 0._num
-      by(:,:,nz+2) = 0._num
-      bz(:,:,nz+1) = 0._num
-      bz(:,:,nz+2) = 0._num
+      bx(:,:,nz+1) = bx(:,:,nz  )
+      bx(:,:,nz+2) = bx(:,:,nz-1)
+      by(:,:,nz+1) = by(:,:,nz  )
+      by(:,:,nz+2) = by(:,:,nz-1)
+      bz(:,:,nz+1) = bz(:,:,nz-1)
+      bz(:,:,nz+2) = bz(:,:,nz-2)
     END IF
 
   END SUBROUTINE bfield_bcs
@@ -156,32 +156,32 @@ CONTAINS
 
     IF (proc_x_min == MPI_PROC_NULL .AND. xbc_min == BC_OTHER) THEN
       energy( 0,:,:) = energy(1,:,:)
-      energy(-1,:,:) = energy(1,:,:)
+      energy(-1,:,:) = energy(2,:,:)
     END IF
 
     IF (proc_x_max == MPI_PROC_NULL .AND. xbc_max == BC_OTHER) THEN
-      energy(nx+1,:,:) = energy(nx,:,:)
-      energy(nx+2,:,:) = energy(nx,:,:)
+      energy(nx+1,:,:) = energy(nx  ,:,:)
+      energy(nx+2,:,:) = energy(nx-1,:,:)
     END IF
 
     IF (proc_y_min == MPI_PROC_NULL .AND. ybc_min == BC_OTHER) THEN
       energy(:, 0,:) = energy(:,1,:)
-      energy(:,-1,:) = energy(:,1,:)
+      energy(:,-1,:) = energy(:,2,:)
     END IF
 
     IF (proc_y_max == MPI_PROC_NULL .AND. ybc_max == BC_OTHER) THEN
-      energy(:,ny+1,:) = energy(:,ny,:)
-      energy(:,ny+2,:) = energy(:,ny,:)
+      energy(:,ny+1,:) = energy(:,ny  ,:)
+      energy(:,ny+2,:) = energy(:,ny-1,:)
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       energy(:,:, 0) = energy(:,:,1)
-      energy(:,:,-1) = energy(:,:,1)
+      energy(:,:,-1) = energy(:,:,2)
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      energy(:,:,nz+1) = energy(:,:,nz)
-      energy(:,:,nz+2) = energy(:,:,nz)
+      energy(:,:,nz+1) = energy(:,:,nz  )
+      energy(:,:,nz+2) = energy(:,:,nz-1)
     END IF
 
   END SUBROUTINE energy_bcs
@@ -198,32 +198,32 @@ CONTAINS
 
     IF (proc_x_min == MPI_PROC_NULL .AND. xbc_min == BC_OTHER) THEN
       rho( 0,:,:) = rho(1,:,:)
-      rho(-1,:,:) = rho(1,:,:)
+      rho(-1,:,:) = rho(2,:,:)
     END IF
 
     IF (proc_x_max == MPI_PROC_NULL .AND. xbc_max == BC_OTHER) THEN
-      rho(nx+1,:,:) = rho(nx,:,:)
-      rho(nx+2,:,:) = rho(nx,:,:)
+      rho(nx+1,:,:) = rho(nx  ,:,:)
+      rho(nx+2,:,:) = rho(nx-1,:,:)
     END IF
 
     IF (proc_y_min == MPI_PROC_NULL .AND. ybc_min == BC_OTHER) THEN
       rho(:, 0,:) = rho(:,1,:)
-      rho(:,-1,:) = rho(:,1,:)
+      rho(:,-1,:) = rho(:,2,:)
     END IF
 
     IF (proc_y_max == MPI_PROC_NULL .AND. ybc_max == BC_OTHER) THEN
-      rho(:,ny+1,:) = rho(:,ny,:)
-      rho(:,ny+2,:) = rho(:,ny,:)
+      rho(:,ny+1,:) = rho(:,ny  ,:)
+      rho(:,ny+2,:) = rho(:,ny-1,:)
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       rho(:,:, 0) = rho(:,:,1)
-      rho(:,:,-1) = rho(:,:,1)
+      rho(:,:,-1) = rho(:,:,2)
     END IF
 
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
-      rho(:,:,nz+1) = rho(:,:,nz)
-      rho(:,:,nz+2) = rho(:,:,nz)
+      rho(:,:,nz+1) = rho(:,:,nz  )
+      rho(:,:,nz+2) = rho(:,:,nz-1)
     END IF
 
   END SUBROUTINE density_bcs

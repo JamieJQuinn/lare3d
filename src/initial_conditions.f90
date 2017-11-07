@@ -29,14 +29,13 @@ CONTAINS
   SUBROUTINE set_initial_conditions
 
     INTEGER :: iz, izm, iz1
-    REAL(num) :: z_base = -30._num,&
-      z_photosphere     = 0._num,&
+    REAL(num) :: z_photosphere = 0._num,&
       z_transition      = 10._num,&
       z_corona          = 20._num
     REAL(num), DIMENSION(:), ALLOCATABLE :: zc_global, dzb_global, dzc_global
     REAL(num), DIMENSION(:), ALLOCATABLE :: temp_ref, rho_ref
-    REAL(num) :: r2, buoyant_factor, pressure_def
-    REAL(num) :: r0 = 2.5_num, z0 = -25._num, alpha = 0.3_num, bFlux = 5._num
+    REAL(num) :: r2, buoyant_factor, lambda = 10.0_num, p, b1
+    REAL(num) :: r0 = 2.5_num, z0 = -25._num, x0 = 0._num, alpha = 0.3_num, bFlux = 6._num
 
     ALLOCATE( zc_global(-1:nz_global+1))
     ALLOCATE(dzb_global(-1:nz_global+1))
@@ -48,7 +47,7 @@ CONTAINS
     vy = 0.0_num
     vz = 0.0_num
     bx = 0.0_num
-    by = 0.0_num
+    by = 0.01_num
     bz = 0.0_num
 
     grav = 1._num
@@ -83,7 +82,7 @@ CONTAINS
     ! hydrostatic profile + ideal gas law
     rho_ref = 1._num
     DO iz = nz_global, 0, -1
-      IF (zc_global(iz) < 0.0_num) THEN
+      IF (zc_global(iz) < z_photosphere) THEN
         izm = iz - 1
         rho_ref(izm) = rho_ref(iz ) &
           * (2._num*temp_ref(iz ) + dzb_global(iz )) &
@@ -92,7 +91,7 @@ CONTAINS
     END DO
 
     DO iz = 0, nz_global
-      IF (zc_global(iz) >= 0.0_num) THEN
+      IF (zc_global(iz) >= z_photosphere) THEN
         izm = iz - 1
         rho_ref(iz ) = rho_ref(izm) &
           * (2._num*temp_ref(izm) - dzb_global(izm)) &
@@ -113,46 +112,31 @@ CONTAINS
       iz1 = iz1 + 1
     END DO
 
-    ! Fill in ambient coronal magnetic field
-    !DO iz = -1, nz + 1
-      !if (zb_global(iz) >= z_corona) THEN
-        !by(:,:,iz) = 0.01_num
-      !END IF
-    !END DO
+    DO ix = -1, nx+1
+      DO iz = -1, nz+1
+        DO iy = -1, ny+1
+          ! First tube
+          r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+          b1 = bFlux*EXP(-r2/r0**2)
+          by(ix,iy,iz) = b1 + by(ix,iy,iz)
 
-    ! Fill in By
-    DO iz = -1, nz + 1
-      DO ix = -1, nx + 1
-        r2 = (zc(iz) - z0)**2 + xc(ix)**2
-        IF (r2 <= r0**2) THEN
-          by(ix,:,iz) = bFlux * EXP(-r2/r0**2)
-        END IF
-      END DO
-    END DO
+          r2 = (xb(ix)-x0)**2 + (zc(iz)-z0)**2
+          b1 = bFlux*EXP(-r2/r0**2)
+          bx(ix,iy,iz) = -b1*alpha*(zc(iz)-z0) + bx(ix,iy,iz)
 
-    ! Fill in Bz and Bz with correct interpolation of By
-    DO iz = -1, nz + 1
-      DO ix = -1, nx + 1
-        ixp = ix+1
-        izp = iz+1
-        r2 = (zc(iz) - z0)**2 + xc(ix)**2
-        IF (r2 <= r0**2) THEN
-          bx(ix,:.iz) =  alpha * (by(ix,1,iz)+by(ixp,1,iz ) * 0.5_num * zc(iz)
-          bz(ix,:.iz) = -alpha * (by(ix,1,iz)+by(ix ,1,izp) * 0.5_num * xc(ix)
-        END IF
-      END DO
-    END DO
+          r2 = (xc(ix)-x0)**2 + (zb(iz)-z0)**2
+          b1 = bFlux*EXP(-r2/r0**2)
+          bz(ix,iy,iz) = b1*alpha*(xc(ix)-x0) + bz(ix,iy,iz)
 
-    ! Fill in density deficit with buoyant factor
-    DO iz = -1, nz + 1
-      DO iy = -1, ny + 1
-        DO ix = -1, nx + 1
-          r2 = (zc(iz) - z0)**2 + xc(ix)**2
-          IF (r2 <= r0**2) THEN
-            pressure_def = bFlux**2 * EXP(-2*r2/r0**2) * (alpha**2 * r0**2 - 2 - 2*alpha**2 * r2)*0.25_num
-            buoyant_factor = EXP(-yc(iy)**2/(y_max - y_min)**2)
-            rho(ix,iy,iz) += buoyant_factor * pressure_def / temp(ix,iy,iz)
-          END IF
+          r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+          b1 = bFlux**2 * EXP(-2.0_num*r2/r0**2) * &    ! Not field but pexc.
+               (1.0_num + r2*alpha**2 - alpha**2*r0**2*0.5_num) * 0.5_num
+          p = energy(ix,iy,iz)*rho(ix,iy,iz)*(gamma-1.0_num)
+          buoyant_factor = EXP(-((yc(iy)/lambda)**2))
+          rho(ix,iy,iz) = rho(ix,iy,iz) - rho(ix,iy,iz) * &
+               b1/p*buoyant_factor
+          p = p - b1
+          energy(ix,iy,iz) = p/(rho(ix,iy,iz)*(gamma-1.0_num))
         END DO
       END DO
     END DO
