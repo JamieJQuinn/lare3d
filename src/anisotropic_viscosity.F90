@@ -23,11 +23,13 @@ CONTAINS
   SUBROUTINE add_braginskii_stress(&
     qxx, qxy, qxz, qyy, qyz, qzz,&
     sxx, sxy, sxz, syy, syz, szz,&
-    bx, by, bz)
+    bx, by, bz,&
+    rho)
 
     REAL(num), INTENT(INOUT) :: qxx, qxy, qxz, qyy, qyz, qzz
     REAL(num), INTENT(IN) :: sxx, sxy, sxz, syy, syz, szz
     REAL(num), INTENT(IN) :: bx, by, bz
+    REAL(num), INTENT(IN) :: rho
 
     REAL(num) :: mB2, brag_visc1, brag_visc2
     REAL(num) :: wbdotb, a, b, c, d
@@ -77,12 +79,12 @@ CONTAINS
       + 2._num*c*(btxy* sxz + btyy* syz + btyz* szz &
                 +  sxy*btxz +  syy*btyz +  syz*btzz)
 
-    qxx = qxx + bsxx
-    qyy = qyy + bsyy
-    qzz = qzz + bszz
-    qxy = qxy + bsxy
-    qxz = qxz + bsxz
-    qyz = qyz + bsyz
+    qxx = qxx + rho*bsxx
+    qyy = qyy + rho*bsyy
+    qzz = qzz + rho*bszz
+    qxy = qxy + rho*bsxy
+    qxz = qxz + rho*bsxz
+    qyz = qyz + rho*bsyz
 
     RETURN
   END SUBROUTINE add_braginskii_stress
@@ -94,11 +96,13 @@ CONTAINS
   SUBROUTINE add_switching_stress(&
     qxx, qxy, qxz, qyy, qyz, qzz,&
     sxx, sxy, sxz, syy, syz, szz,&
-    bx, by, bz)
+    bx, by, bz,&
+    rho)
 
     REAL(num), INTENT(INOUT) :: qxx, qxy, qxz, qyy, qyz, qzz
     REAL(num), INTENT(IN) :: sxx, sxy, sxz, syy, syz, szz
     REAL(num), INTENT(IN) :: bx, by, bz
+    REAL(num), INTENT(IN) :: rho
 
     REAL(num) :: mB2, s2, wbdotb
     REAL(num) :: bsxx, bsxy, bsxz, bsyy, bsyz, bszz
@@ -124,12 +128,12 @@ CONTAINS
     bsxz = visc3*((1.0_num-s2)*sxz*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btxz))
     bsyz = visc3*((1.0_num-s2)*syz*2.0_num + 1.5_num*s2/MAX(mB2**2, none_zero)*wbdotb*(btyz))
 
-    qxx = qxx + bsxx
-    qyy = qyy + bsyy
-    qzz = qzz + bszz
-    qxy = qxy + bsxy
-    qxz = qxz + bsxz
-    qyz = qyz + bsyz
+    qxx = qxx + rho*bsxx
+    qyy = qyy + rho*bsyy
+    qzz = qzz + rho*bszz
+    qxy = qxy + rho*bsxy
+    qxz = qxz + rho*bsxz
+    qyz = qyz + rho*bsyz
 
     RETURN
   END SUBROUTINE
