@@ -178,7 +178,7 @@ MODULE shared_data
   INTEGER :: subtype, obstype
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
-  INTEGER, PARAMETER :: en_nvars = 6
+  INTEGER:: en_nvars = 6
   INTEGER :: file_number = 0
 #ifdef FILEPREFIX
   CHARACTER(LEN=4), PARAMETER :: filesystem = 'nfs:'
