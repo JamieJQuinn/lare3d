@@ -68,7 +68,7 @@ CONTAINS
       var_local(4,ndump) = total_visc_heating
       var_local(5,ndump) = total_ohmic_heating
 #ifdef LIMIT_DENSITY
-      var_local(5,ndump) = total_density_change
+      var_local(6,ndump) = total_density_change
 #endif
 
       IF (ndump == dump_frequency .OR. last_call) THEN
