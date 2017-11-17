@@ -184,6 +184,9 @@ CONTAINS
     ! Anisotropic viscosity parameters
     brag_alpha = 6._num
     switching_param = brag_alpha**2
+
+    min_density = 1.0e-9_num
+
   END SUBROUTINE control_variables
 
 
