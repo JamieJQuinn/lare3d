@@ -811,6 +811,9 @@ CONTAINS
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
       en_nvars = en_nvars + 2
 #endif
+#ifdef LIMIT_DENSITY
+      en_nvars = en_nvars + 1
+#endif
 
     CALL output_log
 
@@ -828,6 +831,10 @@ CONTAINS
     varnames(varname_idx+1) = 'max_heating_iso_visc'
     varnames(varname_idx+2) = 'max_heating_aniso_visc'
     varname_idx = varname_idx + 2
+#endif
+#ifdef LIMIT_DENSITY
+    varnames(varname_idx+1) = 'density_change'
+    varname_idx = varname_idx + 1
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length
