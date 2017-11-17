@@ -711,8 +711,12 @@ CONTAINS
 
   SUBROUTINE setup_files
 
-    INTEGER :: p1, header_length
+    INTEGER :: p1, header_length, varname_idx
     CHARACTER(LEN=c_id_length) :: varnames(en_nvars)
+
+#ifdef LIMIT_DENSITY
+      en_nvars = en_nvars + 1
+#endif
 
     CALL output_log
 
@@ -725,8 +729,10 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
+    varname_idx = 6
 #ifdef LIMIT_DENSITY
-    varnames(7) = 'density_change'
+    varnames(varname_idx+1) = 'density_change'
+    varname_idx = varname_idx + 1
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length
