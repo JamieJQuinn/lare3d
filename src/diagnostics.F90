@@ -85,6 +85,9 @@ CONTAINS
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
 #endif
+#ifdef LIMIT_DENSITY
+      var_local(6,ndump) = total_density_change
+#endif
 
       IF (ndump == dump_frequency .OR. last_call) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
@@ -816,9 +819,14 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
+<<<<<<< HEAD
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
     varnames(7) = 'max_heating_iso_visc'
     varnames(8) = 'max_heating_aniso_visc'
+=======
+#ifdef LIMIT_DENSITY
+    varnames(7) = 'density_change'
+>>>>>>> feature/limit_density
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length

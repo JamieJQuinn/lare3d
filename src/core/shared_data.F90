@@ -158,6 +158,7 @@ MODULE shared_data
 
   ! Density limiter
   REAL(num) :: min_density
+  REAL(num) :: total_density_change
 
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)
@@ -185,10 +186,12 @@ MODULE shared_data
   INTEGER :: subtype, obstype
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
-#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-  INTEGER, PARAMETER :: en_nvars = 8
-#else
   INTEGER, PARAMETER :: en_nvars = 6
+#ifdef LIMIT_DENSITY
+  en_nvars = en_nvars + 1
+#endif
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+  en_nvars = en_nvars + 2
 #endif
   INTEGER :: file_number = 0
 #ifdef FILEPREFIX
