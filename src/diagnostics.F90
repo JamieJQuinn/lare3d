@@ -805,8 +805,12 @@ CONTAINS
 
   SUBROUTINE setup_files
 
-    INTEGER :: p1, header_length
+    INTEGER :: p1, header_length, varname_idx
     CHARACTER(LEN=c_id_length) :: varnames(en_nvars)
+
+#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
+      en_nvars = en_nvars + 2
+#endif
 
     CALL output_log
 
@@ -819,14 +823,11 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
-<<<<<<< HEAD
+    varname_idx = 6
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-    varnames(7) = 'max_heating_iso_visc'
-    varnames(8) = 'max_heating_aniso_visc'
-=======
-#ifdef LIMIT_DENSITY
-    varnames(7) = 'density_change'
->>>>>>> feature/limit_density
+    varnames(varname_idx+1) = 'max_heating_iso_visc'
+    varnames(varname_idx+2) = 'max_heating_aniso_visc'
+    varname_idx = varname_idx + 2
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length
