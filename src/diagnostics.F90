@@ -67,6 +67,9 @@ CONTAINS
       var_local(3,ndump) = en_int
       var_local(4,ndump) = total_visc_heating
       var_local(5,ndump) = total_ohmic_heating
+#ifdef LIMIT_DENSITY
+      var_local(5,ndump) = total_density_change
+#endif
 
       IF (ndump == dump_frequency .OR. last_call) THEN
         CALL MPI_REDUCE(var_local, var_sum, (en_nvars-1) * ndump, &
@@ -722,6 +725,9 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
+#ifdef LIMIT_DENSITY
+    varnames(7) = 'density_change'
+#endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length
     ! Write history file header if not appending to file

@@ -154,6 +154,7 @@ MODULE shared_data
 
   ! Density limiter
   REAL(num) :: min_density
+  REAL(num) :: total_density_change
 
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)
@@ -182,6 +183,9 @@ MODULE shared_data
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
   INTEGER, PARAMETER :: en_nvars = 6
+#ifdef LIMIT_DENSITY
+  en_nvars = en_nvars + 1
+#endif
   INTEGER :: file_number = 0
 #ifdef FILEPREFIX
   CHARACTER(LEN=4), PARAMETER :: filesystem = 'nfs:'
