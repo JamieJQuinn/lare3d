@@ -72,7 +72,7 @@ CONTAINS
     visc2 = 0.0_num
 
     ! Real viscosity expressed as the inverse Reynolds number
-    visc3 = 1.0e-4_num
+    visc3 = 1.0e-3_num
 
     ! Set these constants to manually override the domain decomposition.
     ! If either constant is set to zero then the code will try to automatically
@@ -82,20 +82,20 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = -126.85_num
-    x_max = 126.85_num
+    x_min = -110.0_num
+    x_max = 110.0_num
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = -126.85_num
-    y_max = 126.85_num
+    y_min = -110.0_num
+    y_max = 110.0_num
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -50.0_num
-    z_max = 80.0_num
+    z_min = -25.0_num
+    z_max = 75.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
@@ -103,7 +103,7 @@ CONTAINS
     resistive_mhd = .TRUE.
 
     ! The background resistivity expressed as the inverse Lundquist number
-    eta_background = 1.0e-4_num
+    eta_background = 1.0e-3_num
 
     ! The critical current for triggering anomalous resistivity
     ! and the resistivity when above the critical current.
@@ -183,7 +183,7 @@ CONTAINS
 
     ! Anisotropic viscosity parameters
     brag_alpha = 6._num
-    switching_param = brag_alpha**2
+    switching_param = 20.0_num
 
     min_density = 1.0e-9_num
 
