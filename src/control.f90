@@ -181,6 +181,8 @@ CONTAINS
     ! This flag is ignored for all other EOS choices.
     neutral_gas = .TRUE.
 
+    min_density = 1.0e-9_num
+
   END SUBROUTINE control_variables
 
 

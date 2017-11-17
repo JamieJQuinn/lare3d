@@ -151,6 +151,8 @@ DEFINES := $(DEFINE)
 # Uncomment to enable the MPI error handler which is useful for debugging
 #DEFINES += $(D)MPI_DEBUG
 
+# Uncomment to enable minimum density (density too small kills timestep)
+#DEFINES += $(D)LIMIT_DENSITY
 
 # --------------------------------------------------
 # Shouldn't need to touch below here
