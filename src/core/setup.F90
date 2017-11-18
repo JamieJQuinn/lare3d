@@ -34,6 +34,10 @@ CONTAINS
     CALL get_job_id(jobid)
     run_date = get_unix_time()
 
+#ifdef LIMIT_DENSITY
+    en_nvars = en_nvars + 1
+#endif
+
   END SUBROUTINE before_control
 
 
