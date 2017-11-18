@@ -808,13 +808,6 @@ CONTAINS
     INTEGER :: p1, header_length, varname_idx
     CHARACTER(LEN=c_id_length) :: varnames(en_nvars)
 
-#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-      en_nvars = en_nvars + 2
-#endif
-#ifdef LIMIT_DENSITY
-      en_nvars = en_nvars + 1
-#endif
-
     CALL output_log
 
     INQUIRE(en_unit, POS=p1)
