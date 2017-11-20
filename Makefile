@@ -161,6 +161,8 @@ DEFINES := $(DEFINE)
 # Uncomment to enable parallel-isotropic switching viscosity model
 #DEFINES += $(D)SWITCHING_VISCOSITY
 
+# Uncomment to enable minimum density (density too small kills timestep)
+#DEFINES += $(D)LIMIT_DENSITY
 
 # --------------------------------------------------
 # Shouldn't need to touch below here

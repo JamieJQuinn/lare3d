@@ -379,6 +379,10 @@ CONTAINS
 
           rho(ix,iy,iz) = rho(ix,iy,iz) / (1.0_num + dv)
 
+#ifdef LIMIT_DENSITY
+          rho(ix,iy,iz) = MAX(rho(ix,iy,iz), min_density)
+#endif
+
           total_visc_heating = total_visc_heating &
               + dt * visc_heat(ix,iy,iz) * cv(ix,iy,iz)
 
@@ -632,14 +636,14 @@ CONTAINS
           CALL add_braginskii_stress(&
             qxx(ix,iy,iz), qxy(ix,iy,iz), qxz(ix,iy,iz), qyy(ix,iy,iz), qyz(ix,iy,iz), qzz(ix,iy,iz),&
             sxx, sxy, sxz, syy, syz, szz,&
-            bx1(ix,iy,iz), by1(ix,iy,iz), bz1(ix,iy,iz))
+            bx1(ix,iy,iz), by1(ix,iy,iz), bz1(ix,iy,iz), rho(ix,iy,iz))
 #endif
 
 #ifdef SWITCHING_VISCOSITY
           CALL add_switching_stress(&
             qxx(ix,iy,iz), qxy(ix,iy,iz), qxz(ix,iy,iz), qyy(ix,iy,iz), qyz(ix,iy,iz), qzz(ix,iy,iz),&
             sxx, sxy, sxz, syy, syz, szz,&
-            bx1(ix,iy,iz), by1(ix,iy,iz), bz1(ix,iy,iz))
+            bx1(ix,iy,iz), by1(ix,iy,iz), bz1(ix,iy,iz), rho(ix,iy,iz))
 #endif
 
           visc_heat(ix,iy,iz) = &

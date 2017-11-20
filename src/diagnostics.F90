@@ -85,6 +85,9 @@ CONTAINS
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
 #endif
+#ifdef LIMIT_DENSITY
+      var_local(6,ndump) = total_density_change
+#endif
 
       IF (ndump == dump_frequency .OR. last_call) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
@@ -802,7 +805,7 @@ CONTAINS
 
   SUBROUTINE setup_files
 
-    INTEGER :: p1, header_length
+    INTEGER :: p1, header_length, varname_idx
     CHARACTER(LEN=c_id_length) :: varnames(en_nvars)
 
     CALL output_log
@@ -816,9 +819,15 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
+    varname_idx = 6
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-    varnames(7) = 'max_heating_iso_visc'
-    varnames(8) = 'max_heating_aniso_visc'
+    varnames(varname_idx+1) = 'max_heating_iso_visc'
+    varnames(varname_idx+2) = 'max_heating_aniso_visc'
+    varname_idx = varname_idx + 2
+#endif
+#ifdef LIMIT_DENSITY
+    varnames(varname_idx+1) = 'density_change'
+    varname_idx = varname_idx + 1
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length

@@ -35,7 +35,7 @@ CONTAINS
     REAL(num), DIMENSION(:), ALLOCATABLE :: zc_global, dzb_global, dzc_global
     REAL(num), DIMENSION(:), ALLOCATABLE :: temp_ref, rho_ref
     REAL(num) :: r2, buoyant_factor, lambda = 10.0_num, p, b1
-    REAL(num) :: r0 = 2.5_num, z0 = -25._num, x0 = 0._num, alpha = 0.3_num, bFlux = 6._num
+    REAL(num) :: r0 = 2.5_num, z0 = -12._num, x0 = 0._num, alpha = 0.5_num, bFlux = 5._num
 
     ALLOCATE( zc_global(-1:nz_global+1))
     ALLOCATE(dzb_global(-1:nz_global+1))
