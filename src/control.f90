@@ -56,16 +56,16 @@ CONTAINS
   SUBROUTINE control_variables
 
     ! Set the number of gridpoints in x and y directions
-    nx_global = 200
-    ny_global = 200
-    nz_global = 200
+    nx_global = 300
+    ny_global = 300
+    nz_global = 300
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 500.0_num
+    t_end = 300.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
