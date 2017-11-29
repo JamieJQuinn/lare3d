@@ -34,8 +34,12 @@ CONTAINS
       z_corona          = 20._num
     REAL(num), DIMENSION(:), ALLOCATABLE :: zc_global, dzb_global, dzc_global
     REAL(num), DIMENSION(:), ALLOCATABLE :: temp_ref, rho_ref
+    ! Tube variables
     REAL(num) :: r2, buoyant_factor, lambda = 10.0_num, p, b1
     REAL(num) :: r0 = 2.5_num, z0 = -12._num, x0 = 0._num, alpha = 0.5_num, bFlux = 5._num
+    ! Ambient dipole variables
+    REAL(num) :: zd = -100._num, bd
+    bd = 7.5e3_num
 
     ALLOCATE( zc_global(-1:nz_global+1))
     ALLOCATE(dzb_global(-1:nz_global+1))
@@ -47,7 +51,7 @@ CONTAINS
     vy = 0.0_num
     vz = 0.0_num
     bx = 0.0_num
-    by = 0.01_num
+    by = 0.0_num
     bz = 0.0_num
 
     grav = 1._num
@@ -112,34 +116,49 @@ CONTAINS
       iz1 = iz1 + 1
     END DO
 
+    ! Insert ambient field
     DO ix = -1, nx+1
       DO iz = -1, nz+1
         DO iy = -1, ny+1
-          ! First tube
-          r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
-          b1 = bFlux*EXP(-r2/r0**2)
-          by(ix,iy,iz) = b1 + by(ix,iy,iz)
+          r2 = SQRT((xb(ix))**2 + (zc(iz)-zd)**2)
+          b1 = -bd*r2**(-3)*(1._num - 3._num*(zc(iz) - zd)**2*r2**(-2))
+          bx(ix,iy,iz) = b1 + bx(ix,iy,iz)
 
-          r2 = (xb(ix)-x0)**2 + (zc(iz)-z0)**2
-          b1 = bFlux*EXP(-r2/r0**2)
-          bx(ix,iy,iz) = -b1*alpha*(zc(iz)-z0) + bx(ix,iy,iz)
-
-          r2 = (xc(ix)-x0)**2 + (zb(iz)-z0)**2
-          b1 = bFlux*EXP(-r2/r0**2)
-          bz(ix,iy,iz) = b1*alpha*(xc(ix)-x0) + bz(ix,iy,iz)
-
-          r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
-          b1 = bFlux**2 * EXP(-2.0_num*r2/r0**2) * &    ! Not field but pexc.
-               (1.0_num + r2*alpha**2 - alpha**2*r0**2*0.5_num) * 0.5_num
-          p = energy(ix,iy,iz)*rho(ix,iy,iz)*(gamma-1.0_num)
-          buoyant_factor = EXP(-((yc(iy)/lambda)**2))
-          rho(ix,iy,iz) = rho(ix,iy,iz) - rho(ix,iy,iz) * &
-               b1/p*buoyant_factor
-          p = p - b1
-          energy(ix,iy,iz) = p/(rho(ix,iy,iz)*(gamma-1.0_num))
+          r2 = SQRT((xc(ix))**2 + (zb(iz)-zd)**2)
+          b1 = -3._num*bd*(zb(iz)-zd)*xc(ix)*r2**(-5)
+          bz(ix,iy,iz) = b1 + bz(ix,iy,iz)
         END DO
       END DO
     END DO
+
+    ! Insert tube
+    !DO ix = -1, nx+1
+      !DO iz = -1, nz+1
+        !DO iy = -1, ny+1
+          !r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+          !b1 = bFlux*EXP(-r2/r0**2)
+          !by(ix,iy,iz) = b1 + by(ix,iy,iz)
+
+          !r2 = (xb(ix)-x0)**2 + (zc(iz)-z0)**2
+          !b1 = bFlux*EXP(-r2/r0**2)
+          !bx(ix,iy,iz) = -b1*alpha*(zc(iz)-z0) + bx(ix,iy,iz)
+
+          !r2 = (xc(ix)-x0)**2 + (zb(iz)-z0)**2
+          !b1 = bFlux*EXP(-r2/r0**2)
+          !bz(ix,iy,iz) = b1*alpha*(xc(ix)-x0) + bz(ix,iy,iz)
+
+          !r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+          !b1 = bFlux**2 * EXP(-2.0_num*r2/r0**2) * &    ! Not field but pexc.
+               !(1.0_num + r2*alpha**2 - alpha**2*r0**2*0.5_num) * 0.5_num
+          !p = energy(ix,iy,iz)*rho(ix,iy,iz)*(gamma-1.0_num)
+          !buoyant_factor = EXP(-((yc(iy)/lambda)**2))
+          !rho(ix,iy,iz) = rho(ix,iy,iz) - rho(ix,iy,iz) * &
+               !b1/p*buoyant_factor
+          !p = p - b1
+          !energy(ix,iy,iz) = p/(rho(ix,iy,iz)*(gamma-1.0_num))
+        !END DO
+      !END DO
+    !END DO
 
     DEALLOCATE(zc_global, dzb_global, dzc_global)
     DEALLOCATE(temp_ref, rho_ref)
