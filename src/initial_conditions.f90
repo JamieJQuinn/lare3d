@@ -120,12 +120,12 @@ CONTAINS
     DO ix = -1, nx+1
       DO iz = -1, nz+1
         DO iy = -1, ny+1
-          r2 = SQRT((xb(ix))**2 + (zc(iz)-zd)**2)
+          r2 = SQRT((yb(iy))**2 + (zc(iz)-zd)**2)
           b1 = -bd*r2**(-3)*(1._num - 3._num*(zc(iz) - zd)**2*r2**(-2))
-          bx(ix,iy,iz) = b1 + bx(ix,iy,iz)
+          by(ix,iy,iz) = b1 + by(ix,iy,iz)
 
-          r2 = SQRT((xc(ix))**2 + (zb(iz)-zd)**2)
-          b1 = -3._num*bd*(zb(iz)-zd)*xc(ix)*r2**(-5)
+          r2 = SQRT((yc(iy))**2 + (zb(iz)-zd)**2)
+          b1 = -3._num*bd*(zb(iz)-zd)*yc(iy)*r2**(-5)
           bz(ix,iy,iz) = b1 + bz(ix,iy,iz)
         END DO
       END DO

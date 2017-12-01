@@ -65,7 +65,7 @@ CONTAINS
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 300.0_num
+    t_end = 200.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -157,8 +157,8 @@ CONTAINS
     ! BC_OTHER    - Other boundary conditions specified in "boundary.f90"
     xbc_min = BC_PERIODIC
     xbc_max = BC_PERIODIC
-    ybc_min = BC_PERIODIC
-    ybc_max = BC_PERIODIC
+    ybc_min = BC_OTHER
+    ybc_max = BC_OTHER
     zbc_min = BC_OTHER
     zbc_max = BC_OTHER
 
