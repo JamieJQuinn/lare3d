@@ -71,6 +71,9 @@ PROGRAM lare3d
     IF (eos_number /= EOS_IDEAL) CALL neutral_fraction ! neutral.f90
     CALL lagrangian_step             ! lagran.f90
     CALL eulerian_remap(step)        ! remap.f90
+#ifdef LIMIT_DENSITY
+    CALL limit_density
+#endif
     IF (rke) CALL energy_correction  ! diagnostics.f90
     IF (any_open) THEN
       CALL open_bcs                  ! openboundary.f90
