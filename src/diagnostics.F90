@@ -796,7 +796,7 @@ CONTAINS
         DO ix = 1, nx
           IF (rho(ix,iy,iz) .le. min_density) THEN
             total_density_change = total_density_change + &
-              (min_density - rho(ix,iy,iz))
+              (min_density - rho(ix,iy,iz)
             rho(ix,iy,iz) = min_density
           END IF
         END DO
