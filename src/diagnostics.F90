@@ -790,18 +790,4 @@ CONTAINS
 
   END SUBROUTINE output_log
 
-  SUBROUTINE limit_density
-    DO iz = 1, nz
-      DO iy = 1, ny
-        DO ix = 1, nx
-          IF (rho(ix,iy,iz) .le. min_density) THEN
-            total_density_change = total_density_change + &
-              (min_density - rho(ix,iy,iz)
-            rho(ix,iy,iz) = min_density
-          END IF
-        END DO
-      END DO
-    END DO
-  END SUBROUTINE
-
 END MODULE diagnostics
