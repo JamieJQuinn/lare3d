@@ -16,7 +16,7 @@ MODULE diagnostics
 
   PRIVATE
 
-  PUBLIC :: set_dt, output_routines, energy_correction, write_file, setup_files, limit_density
+  PUBLIC :: set_dt, output_routines, energy_correction, write_file, setup_files
 
   REAL(dbl) :: visc_heating
   LOGICAL, SAVE :: visc_heating_updated = .FALSE.
@@ -930,21 +930,5 @@ CONTAINS
     WRITE(stat_unit,*)
 
   END SUBROUTINE output_log
-
-  SUBROUTINE limit_density
-#ifdef LIMIT_DENSITY
-    DO iz = 1, nz
-      DO iy = 1, ny
-        DO ix = 1, nx
-          IF (rho(ix,iy,iz) .le. min_density) THEN
-            total_density_change = total_density_change + &
-              (min_density - rho(ix,iy,iz))
-            rho(ix,iy,iz) = min_density
-          END IF
-        END DO
-      END DO
-    END DO
-#endif
-  END SUBROUTINE
 
 END MODULE diagnostics

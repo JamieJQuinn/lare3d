@@ -379,6 +379,14 @@ CONTAINS
 
           rho(ix,iy,iz) = rho(ix,iy,iz) / (1.0_num + dv)
 
+#ifdef LIMIT_DENSITY
+          IF (rho(ix,iy,iz) .le. min_density) THEN
+            total_density_change = total_density_change + &
+              (min_density - rho(ix,iy,iz) )
+            rho(ix,iy,iz) = min_density
+          END IF
+#endif
+
           total_visc_heating = total_visc_heating &
               + dt * visc_heat(ix,iy,iz) * cv(ix,iy,iz)
 
