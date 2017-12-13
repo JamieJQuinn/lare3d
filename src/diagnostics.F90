@@ -15,7 +15,7 @@ MODULE diagnostics
 
   PRIVATE
 
-  PUBLIC :: set_dt, output_routines, energy_correction, write_file, setup_files, limit_density
+  PUBLIC :: set_dt, output_routines, energy_correction, write_file, setup_files
 
   REAL(dbl) :: visc_heating
   LOGICAL, SAVE :: visc_heating_updated = .FALSE.
@@ -791,7 +791,6 @@ CONTAINS
   END SUBROUTINE output_log
 
   SUBROUTINE limit_density
-#ifdef LIMIT_DENSITY
     DO iz = 1, nz
       DO iy = 1, ny
         DO ix = 1, nx
@@ -803,7 +802,6 @@ CONTAINS
         END DO
       END DO
     END DO
-#endif
   END SUBROUTINE
 
 END MODULE diagnostics
