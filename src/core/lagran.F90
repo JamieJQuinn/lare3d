@@ -381,7 +381,7 @@ CONTAINS
 #ifdef LIMIT_DENSITY
           IF (rho(ix,iy,iz) .le. min_density) THEN
             total_density_change = total_density_change + &
-              (rho(ix,iy,iz) - min_density)
+              (min_density - rho(ix,iy,iz) )
             rho(ix,iy,iz) = min_density
           END IF
 #endif
