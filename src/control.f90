@@ -65,7 +65,7 @@ CONTAINS
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 200.0_num
+    t_end = 300.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -141,7 +141,7 @@ CONTAINS
     !              setup new initial conditions
     ! IC_RESTART - Load the output file with index restart_snapshot and use it
     !              as the initial conditions
-    initial = IC_NEW
+    initial = IC_RESTART
     restart_snapshot = 1
 
     ! If cowling_resistivity is true then the code calculates and

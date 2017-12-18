@@ -16,7 +16,7 @@ MODULE diagnostics
 
   PRIVATE
 
-  PUBLIC :: set_dt, output_routines, energy_correction, write_file, setup_files, limit_density
+  PUBLIC :: set_dt, output_routines, energy_correction, write_file, setup_files, limit_density, after_restart
 
   REAL(dbl) :: visc_heating
   LOGICAL, SAVE :: visc_heating_updated = .FALSE.
@@ -945,6 +945,41 @@ CONTAINS
       END DO
     END DO
 #endif
+  END SUBROUTINE
+
+  SUBROUTINE after_restart
+  REAL(num) :: r2, buoyant_factor, lambda = 10.0_num, p, b1
+  REAL(num) :: r0 = 2.5_num, z0 = -12._num, x0 = 0._num, alpha = 0.5_num, bFlux = 5._num
+
+  ! Insert tube
+  DO ix = -1, nx+1
+    DO iz = -1, nz+1
+      DO iy = -1, ny+1
+        r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+        b1 = bFlux*EXP(-r2/r0**2)
+        by(ix,iy,iz) = b1 + by(ix,iy,iz)
+
+        r2 = (xb(ix)-x0)**2 + (zc(iz)-z0)**2
+        b1 = bFlux*EXP(-r2/r0**2)
+        bx(ix,iy,iz) = -b1*alpha*(zc(iz)-z0) + bx(ix,iy,iz)
+
+        r2 = (xc(ix)-x0)**2 + (zb(iz)-z0)**2
+        b1 = bFlux*EXP(-r2/r0**2)
+        bz(ix,iy,iz) = b1*alpha*(xc(ix)-x0) + bz(ix,iy,iz)
+
+        r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+        b1 = bFlux**2 * EXP(-2.0_num*r2/r0**2) * &    ! Not field but pexc.
+             (1.0_num + r2*alpha**2 - alpha**2*r0**2*0.5_num) * 0.5_num
+        p = energy(ix,iy,iz)*rho(ix,iy,iz)*(gamma-1.0_num)
+        buoyant_factor = EXP(-((yc(iy)/lambda)**2))
+        rho(ix,iy,iz) = rho(ix,iy,iz) - rho(ix,iy,iz) * &
+             b1/p*buoyant_factor
+        p = p - b1
+        energy(ix,iy,iz) = p/(rho(ix,iy,iz)*(gamma-1.0_num))
+      END DO
+    END DO
+  END DO
+
   END SUBROUTINE
 
 END MODULE diagnostics

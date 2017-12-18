@@ -43,6 +43,7 @@ PROGRAM lare3d
     CALL set_initial_conditions  ! required to reset gravity
     CALL restart_data            ! setup.f90
     restart = .TRUE.
+    CALL after_restart
   END IF
 
   IF (IAND(initial, IC_NEW) /= 0) THEN
