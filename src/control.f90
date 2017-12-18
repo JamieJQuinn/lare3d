@@ -165,7 +165,7 @@ CONTAINS
     ! Set to true to turn on routine for damped boundaries.
     ! These routines are in boundary.f90 and you should check that they
     ! actually do what you want.
-    damping = .FALSE.
+    damping = .TRUE.
 
     ! Set the equation of state. Valid choices are
     ! EOS_IDEAL - Simple ideal gas for perfectly ionised plasma
