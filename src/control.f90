@@ -238,18 +238,19 @@ CONTAINS
     ! 19 - jz
     ! 20 - isotropic viscous heating
     ! 21 - anisotropic viscous heating
+    ! 22 - switching function
+    ! 23 - bx centered
+    ! 24 - by centered
+    ! 25 - bz centered
     ! If a given element of dump_mask is true then that field is dumped
     ! If the element is false then the field isn't dumped
     ! N.B. if dump_mask(1:8) not true then the restart will not work
     dump_mask = .FALSE.
-    dump_mask(1:10) = .TRUE.
+    dump_mask(1:8) = .TRUE.
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
-
-    dump_mask(20) = .TRUE.
-    dump_mask(21) = .TRUE.
-    dump_mask(22) = .TRUE.
+    dump_mask(20:25) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 

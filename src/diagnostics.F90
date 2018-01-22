@@ -518,6 +518,49 @@ CONTAINS
           cell_distribution, cellng_subarray, convert)
     END IF
 
+    IF (dump_mask(23)) THEN
+      varname = 'bx-centred'
+      units = 'T'
+      dims = global_dims
+
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      array(:,:,:) = (bx(1:nx,1:ny,1:nz) + bx(0:nx-1,1:ny,1:nz))*0.5_num
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Magnetic_Field/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
+    END IF
+
+    IF (dump_mask(24)) THEN
+      varname = 'by-centred'
+      units = 'T'
+      dims = global_dims
+
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      array(:,:,:) = (by(1:nx,1:ny,1:nz) + by(1:nx,0:ny-1,1:nz))*0.5_num
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Magnetic_Field/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
+    END IF
+
+    IF (dump_mask(25)) THEN
+      varname = 'bz-centred'
+      units = 'T'
+      dims = global_dims
+
+      IF (.NOT.ALLOCATED(array)) ALLOCATE(array(nx,ny,nz))
+      array(:,:,:) = (bz(1:nx,1:ny,1:nz) + bz(1:nx,1:ny,0:nz-1))*0.5_num
+
+      CALL sdf_write_plain_variable(sdf_handle, TRIM(varname), &
+          'Magnetic_Field/' // TRIM(varname), TRIM(units), dims, &
+          c_stagger_cell_centre, 'grid', array, &
+          cell_distribution, cellng_subarray, convert)
+    END IF
+
+
     IF (ALLOCATED(array)) DEALLOCATE(array)
 
     ! Close the file

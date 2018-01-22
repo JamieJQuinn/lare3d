@@ -208,7 +208,7 @@ MODULE shared_data
   INTEGER, PARAMETER :: c_stagger_bz = c_stagger_face_z
 
   ! Number of variables to dump
-  LOGICAL, DIMENSION(25) :: dump_mask
+  LOGICAL, DIMENSION(30) :: dump_mask
 
   INTEGER, PARAMETER :: stat_unit = 20
   INTEGER, PARAMETER :: en_unit = 30
