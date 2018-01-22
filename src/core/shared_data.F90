@@ -182,11 +182,7 @@ MODULE shared_data
   INTEGER :: subtype, obstype
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
-#ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-  INTEGER, PARAMETER :: en_nvars = 10
-#else
-  INTEGER, PARAMETER :: en_nvars = 8
-#endif
+  INTEGER:: en_nvars = 8
   INTEGER :: file_number = 0
 #ifdef FILEPREFIX
   CHARACTER(LEN=4), PARAMETER :: filesystem = 'nfs:'

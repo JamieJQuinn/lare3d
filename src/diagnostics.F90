@@ -926,7 +926,7 @@ CONTAINS
 
   SUBROUTINE setup_files
 
-    INTEGER :: p1, header_length
+    INTEGER :: p1, header_length, varname_idx
     CHARACTER(LEN=c_id_length) :: varnames(en_nvars)
 
     CALL output_log
@@ -942,9 +942,11 @@ CONTAINS
     varnames(6) = 'heating_ohmic'
     varnames(7) = 'en_ke_parallel'
     varnames(8) = 'en_ke_perp'
+    varname_idx = 8
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-    varnames(9) = 'max_heating_iso_visc'
-    varnames(10) = 'max_heating_aniso_visc'
+    varnames(varname_idx+1) = 'max_heating_iso_visc'
+    varnames(varname_idx+2) = 'max_heating_aniso_visc'
+    varname_idx = varname_idx + 2
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length
