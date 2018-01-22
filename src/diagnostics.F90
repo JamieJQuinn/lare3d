@@ -36,6 +36,7 @@ CONTAINS
     INTEGER :: i
     LOGICAL :: print_arrays, last_call
     REAL(num) :: en_ke = 0.0_num, en_int = 0.0_num, en_b = 0.0_num
+    REAL(num) :: en_ke_parallel = 0.0_num, en_ke_perp = 0.0_num
     REAL(num), ALLOCATABLE, SAVE :: t_out(:)
     REAL(dbl), ALLOCATABLE, SAVE :: var_local(:,:), var_sum(:,:)
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
@@ -73,7 +74,7 @@ CONTAINS
         first = .FALSE.
       END IF
 
-      CALL energy_account(en_b, en_ke, en_int, .FALSE.)
+      CALL energy_account(en_b, en_ke, en_int, en_ke_parallel, en_ke_perp, .FALSE.)
 
       IF (rank == 0) t_out(ndump) = time
       var_local(1,ndump) = en_b
@@ -81,6 +82,8 @@ CONTAINS
       var_local(3,ndump) = en_int
       var_local(4,ndump) = total_visc_heating
       var_local(5,ndump) = total_ohmic_heating
+      var_local(6,ndump) = en_ke_parallel
+      var_local(7,ndump) = en_ke_perp
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
@@ -727,17 +730,22 @@ CONTAINS
 
 
 
-  SUBROUTINE energy_account(energy_b, energy_ke, energy_int, do_sum)
+  SUBROUTINE energy_account(energy_b, energy_ke, energy_int, energy_ke_parallel,&
+    energy_ke_perp, do_sum)
 
-    REAL(dbl), INTENT(OUT) :: energy_b, energy_ke, energy_int
+    REAL(dbl), INTENT(OUT) :: energy_b, energy_ke, energy_int, energy_ke_parallel, energy_ke_perp
     LOGICAL, INTENT(IN) :: do_sum
     REAL(dbl) :: energy_b_local, energy_ke_local, energy_int_local
-    REAL(dbl) :: energy_local(3), energy_sum(3)
+    REAL(dbl) :: energy_ke_parallel_local, energy_ke_perp_local
+    REAL(dbl) :: energy_local(5), energy_sum(5)
     REAL(dbl) :: cv_v, rho_v, w1, w2, w3
+    REAL(dbl) :: bx1, by1, bz1, mB2
 
     energy_b_local   = 0.0_dbl
     energy_ke_local  = 0.0_dbl
     energy_int_local = 0.0_dbl
+    energy_ke_parallel_local = 0.0_dbl
+    energy_ke_perp_local = 0.0_dbl
 
     DO iz = 1, nz
       izm = iz - 1
@@ -802,21 +810,94 @@ CONTAINS
       END DO
     END DO
 
+    ! Calculate kinetic energy parallel to velocity
+    DO iz = 0, nz
+      izp = iz + 1
+      DO iy = 0, ny
+        iyp = iy + 1
+        DO ix = 0, nx
+          ixp = ix + 1
+
+          ! WARNING the KE is summed on the vertices
+          rho_v = rho(ix ,iy ,iz ) * cv(ix ,iy ,iz ) &
+                + rho(ixp,iy ,iz ) * cv(ixp,iy ,iz ) &
+                + rho(ix ,iyp,iz ) * cv(ix ,iyp,iz ) &
+                + rho(ixp,iyp,iz ) * cv(ixp,iyp,iz ) &
+                + rho(ix ,iy ,izp) * cv(ix ,iy ,izp) &
+                + rho(ixp,iy ,izp) * cv(ixp,iy ,izp) &
+                + rho(ix ,iyp,izp) * cv(ix ,iyp,izp) &
+                + rho(ixp,iyp,izp) * cv(ixp,iyp,izp)
+
+          cv_v = cv(ix,iy ,iz ) + cv(ixp,iy ,iz ) &
+               + cv(ix,iyp,iz ) + cv(ixp,iyp,iz ) &
+               + cv(ix,iy ,izp) + cv(ixp,iy ,izp) &
+               + cv(ix,iyp,izp) + cv(ixp,iyp,izp)
+
+          rho_v = rho_v / cv_v
+          cv_v = cv_v * 0.125_dbl
+
+          bx1 = bx(ix , iy , iz ) &
+              + bx(ix , iyp, iz ) &
+              + bx(ix , iy , izp) &
+              + bx(ix , iyp, izp)
+
+          by1 = by(ix , iy , iz ) &
+              + by(ixp, iy , iz ) &
+              + by(ix , iy , izp) &
+              + by(ixp, iy , izp)
+
+          bz1 = bz(ix , iy , iz ) &
+              + bz(ixp, iy , iz ) &
+              + bz(ix , iyp, iz ) &
+              + bz(ixp, iyp, iz )
+
+          mB2 = bx1**2 + by1**2 + bz1**2
+          mB2 = MAX(mB2, none_zero)
+
+          w1 = rho_v * cv_v &
+              * (vx(ix,iy,iz)*bx1 + vy(ix,iy,iz)*by1 + vz(ix,iy,iz)*bz1)**2 &
+              / mB2
+
+          IF (ix == 0 .OR. ix == nx) THEN
+            w1 = w1 * 0.5_dbl
+          END IF
+
+          IF (iy == 0 .OR. iy == ny) THEN
+            w1 = w1 * 0.5_dbl
+          END IF
+
+          IF (iz == 0 .OR. iz == nz) THEN
+            w1 = w1 * 0.5_dbl
+          END IF
+
+          energy_ke_parallel_local = energy_ke_parallel_local + w1 * 0.5_dbl
+        END DO
+      END DO
+    END DO
+
+    energy_ke_perp_local = energy_ke_local - energy_ke_parallel_local
+
     IF (do_sum) THEN
       energy_local(1) = energy_b_local
       energy_local(2) = energy_ke_local
       energy_local(3) = energy_int_local
+      energy_local(4) = energy_ke_parallel_local
+      energy_local(5) = energy_ke_perp_local
 
-      CALL MPI_ALLREDUCE(energy_local, energy_sum, 3, MPI_DOUBLE_PRECISION, &
+      CALL MPI_ALLREDUCE(energy_local, energy_sum, 5, MPI_DOUBLE_PRECISION, &
           MPI_SUM, comm, errcode)
 
       energy_b   = energy_sum(1)
       energy_ke  = energy_sum(2)
       energy_int = energy_sum(3)
+      energy_ke_parallel = energy_sum(4)
+      energy_ke_perp = energy_sum(5)
     ELSE
       energy_b   = energy_b_local
       energy_ke  = energy_ke_local
       energy_int = energy_int_local
+      energy_ke_parallel = energy_ke_parallel_local
+      energy_ke_perp = energy_ke_perp_local
     END IF
 
   END SUBROUTINE energy_account
@@ -859,9 +940,11 @@ CONTAINS
     varnames(4) = 'en_int'
     varnames(5) = 'heating_visc'
     varnames(6) = 'heating_ohmic'
+    varnames(7) = 'en_ke_parallel'
+    varnames(8) = 'en_ke_perp'
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-    varnames(7) = 'max_heating_iso_visc'
-    varnames(8) = 'max_heating_aniso_visc'
+    varnames(9) = 'max_heating_iso_visc'
+    varnames(10) = 'max_heating_aniso_visc'
 #endif
 
     header_length = 3 + 7 * 4 + en_nvars * c_id_length

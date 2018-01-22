@@ -183,9 +183,9 @@ MODULE shared_data
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-  INTEGER, PARAMETER :: en_nvars = 8
+  INTEGER, PARAMETER :: en_nvars = 10
 #else
-  INTEGER, PARAMETER :: en_nvars = 6
+  INTEGER, PARAMETER :: en_nvars = 8
 #endif
   INTEGER :: file_number = 0
 #ifdef FILEPREFIX
