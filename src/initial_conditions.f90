@@ -35,6 +35,7 @@ CONTAINS
     REAL(num) :: rc, rb, rbx, rby, b_theta, b_z, delta, B2, C2
     REAL(num) :: k, amp, dx, dy, theta, v_perp, v_r, v_theta
     REAL(num) :: costh, sinth, coskz, sinkz, arg
+    REAL(num) :: T0
 
     vx = 0.0_num
     vy = 0.0_num
@@ -52,8 +53,9 @@ CONTAINS
     by = 0.0_num
     bz = 0.0_num
 
-    ! Energy must be tiny initially to avoid negative energy in first stages
-    energy = 1.0e-50_num
+    T0 = (B0**2)*mf*mh_si/(kb_si*mu0_si*RHO0)
+
+    energy = 1.0_num/(gamma-1.0_num)*2.0e4_num/T0
     rho = 1.0_num
     grav = 0.0_num
 
