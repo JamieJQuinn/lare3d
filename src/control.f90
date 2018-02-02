@@ -63,24 +63,24 @@ CONTAINS
     ! Low res
     !nx_global = 128
     !ny_global = 128
-    !nz_global = 256
+    !nz_global = 128
 
     ! Mid res
     nx_global = 256
     ny_global = 256
-    nz_global = 512
+    nz_global = 256
 
     ! High res
     !nx_global = 512
     !ny_global = 512
-    !nz_global = 1024
+    !nz_global = 512
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 300.0_num
+    t_end = 50.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -109,8 +109,8 @@ CONTAINS
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -10.0_num
-    z_max =  10.0_num
+    z_min = -2.0_num
+    z_max =  2.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
@@ -216,7 +216,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 25.0_num
+    dt_snapshots = 1.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
