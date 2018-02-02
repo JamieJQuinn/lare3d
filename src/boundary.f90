@@ -290,12 +290,12 @@ CONTAINS
     !twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
 
     ! --- ramp up twisting then ramp down ---
-    IF (time < 20.0_num) THEN
+    IF (time < 27.0_num) THEN
       ! ramp up twist
       twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
     ELSE
       ! ramp down twist
-      twist = 0.025_num*pi*(1.0_num - TANH(2.0_num*(time - 20.0_num)))
+      twist = 0.025_num*pi*(1.0_num - TANH(2.0_num*(time - 29.0_num)))
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
@@ -359,12 +359,12 @@ CONTAINS
     !twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time + dt2 - 2.0_num)))
 
     ! --- ramp up twisting then ramp down ---
-    IF (time < 20.0_num) THEN
+    IF (time < 27.0_num) THEN
       ! ramp up twist
       twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time + dt2 - 2.0_num)))
     ELSE
       ! ramp down twist
-      twist = 0.025_num*pi*(1.0_num - TANH(2.0_num*(time + dt2 - 23.0_num)))
+      twist = 0.025_num*pi*(1.0_num - TANH(2.0_num*(time + dt2 - 29.0_num)))
     END IF
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
