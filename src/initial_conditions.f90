@@ -39,7 +39,17 @@ CONTAINS
 
     bx = 0.0_num
     by = 0.0_num
-    bz = 1.0_num
+    bz = 0.0_num
+
+    DO iz = -1, nz+2
+      DO iy = -1, ny+2
+        DO ix = -1, nx+2
+          bx(ix,iy,iz) = xb(ix)
+          by(ix,iy,iz) = yb(iy)
+          bz(ix,iy,iz) = -2.0_num*zb(iz)
+        END DO
+      END DO
+    END DO
 
     T0 = (B0**2)*mf*mh_si/(kb_si*mu0_si*RHO0)
 

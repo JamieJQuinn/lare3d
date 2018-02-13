@@ -80,7 +80,7 @@ CONTAINS
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 50.0_num
+    t_end = 30.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -97,20 +97,20 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = -2.0_num
-    x_max =  2.0_num
+    x_min = -3.0_num
+    x_max =  3.0_num
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = -2.0_num
-    y_max =  2.0_num
+    y_min = -3.0_num
+    y_max =  3.0_num
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -2.0_num
-    z_max =  2.0_num
+    z_min = -3.0_num
+    z_max =  3.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
