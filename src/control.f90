@@ -201,7 +201,7 @@ CONTAINS
     ! collision time from Braginskii 1965
     ! Coronal temp taken to be 1e6 K
     brag_alpha = 1.201632375e-4_num/RHO0
-    switching_param = brag_alpha**2
+    switching_param = 150
   END SUBROUTINE control_variables
 
 
