@@ -287,7 +287,7 @@ CONTAINS
     END IF
 
     ! --- simple ramp up twisting ---
-    twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
+    twist = 0.025_num*pi*(1.0_num + TANH(time/2.0_num - 2.0_num))
 
     ! --- ramp up twisting then ramp down ---
     !IF (time < 27.0_num) THEN
@@ -356,7 +356,7 @@ CONTAINS
       vz1(:,ny:ny+2,:) = 0.0_num
     END IF
 
-    twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time + dt2 - 2.0_num)))
+    twist = 0.025_num*pi*(1.0_num + TANH(time/2.0_num - 2.0_num))
 
     ! --- ramp up twisting then ramp down ---
     !IF (time < 27.0_num) THEN
