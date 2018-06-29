@@ -256,7 +256,7 @@ CONTAINS
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
-    dump_mask(14:16) = .TRUE.
+    dump_mask(14:16) = .FALSE.
     dump_mask(22:25) = .TRUE.
 
   END SUBROUTINE set_output_dumps
