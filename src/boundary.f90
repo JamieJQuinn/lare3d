@@ -287,7 +287,7 @@ CONTAINS
     END IF
 
     ! --- simple ramp up twisting ---
-    twist = 0.05_num*pi*(1.0_num + TANH((time/2.0_num - 2.0_num)))
+    twist = 0.025_num*pi*(1.0_num + TANH((time/2.0_num - 2.0_num)))
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = -2, ny+2
@@ -347,7 +347,7 @@ CONTAINS
       vz1(:,ny:ny+2,:) = 0.0_num
     END IF
 
-    twist = 0.05_num*pi*(1.0_num + TANH(((time+dt2)/2.0_num - 2.0_num)))
+    twist = 0.025_num*pi*(1.0_num + TANH(((time+dt2)/2.0_num - 2.0_num)))
 
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = -2, ny+2
