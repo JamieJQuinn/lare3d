@@ -155,8 +155,8 @@ CONTAINS
     ! BC_PERIODIC - Periodic boundary conditions
     ! BC_OPEN     - Reimann far-field characteristic boundary conditions
     ! BC_OTHER    - Other boundary conditions specified in "boundary.f90"
-    xbc_min = BC_PERIODIC
-    xbc_max = BC_PERIODIC
+    xbc_min = BC_OTHER
+    xbc_max = BC_OTHER
     ybc_min = BC_OTHER
     ybc_max = BC_OTHER
     zbc_min = BC_OTHER

@@ -38,8 +38,7 @@ CONTAINS
     REAL(num) :: r2, buoyant_factor, lambda = 10.0_num, p, b1
     REAL(num) :: r0 = 2.5_num, z0 = -12._num, x0 = 0._num, alpha = 0.5_num, bFlux = 5._num
     ! Ambient dipole variables
-    REAL(num) :: zd = -100._num, bd
-    bd = 7.5e3_num
+    REAL(num) :: zd = -100._num, bd = 7.5e3_num
 
     ALLOCATE( zc_global(-1:nz_global+1))
     ALLOCATE(dzb_global(-1:nz_global+1))
@@ -109,6 +108,7 @@ CONTAINS
     ! Set z index local to MPI process
     iz1 = n_global_min(3) - 1
 
+    ! Fill in energy and density
     DO iz = -1, nz + 2
       rho(:,:,iz) = rho_ref(iz1)
       energy(:,:,iz) = temp_ref(iz1)/(gamma-1.0_num)
@@ -116,7 +116,7 @@ CONTAINS
       iz1 = iz1 + 1
     END DO
 
-    ! Insert ambient field
+    ! Insert ambient field, symmetric in y
     DO ix = -1, nx+1
       DO iy = -1, ny+1
         DO iz = -1, nz+1
@@ -131,7 +131,7 @@ CONTAINS
       END DO
     END DO
 
-    ! Insert tube
+    ! Insert tube with axis pointing in y-dir
     DO ix = -1, nx+1
       DO iz = -1, nz+1
         DO iy = -1, ny+1
