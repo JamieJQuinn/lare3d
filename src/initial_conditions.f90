@@ -117,48 +117,48 @@ CONTAINS
     END DO
 
     ! Insert ambient field, symmetric in y
-    DO ix = -1, nx+1
-      DO iy = -1, ny+1
-        DO iz = -1, nz+1
-          r2 = SQRT((xb(ix))**2 + (zc(iz)-zd)**2)
-          b1 = -bd*r2**(-3)*(1._num - 3._num*(zc(iz) - zd)**2*r2**(-2))
-          bx(ix,iy,iz) = b1 + bx(ix,iy,iz)
+    !DO ix = -1, nx+1
+      !DO iy = -1, ny+1
+        !DO iz = -1, nz+1
+          !r2 = SQRT((xb(ix))**2 + (zc(iz)-zd)**2)
+          !b1 = -bd*r2**(-3)*(1._num - 3._num*(zc(iz) - zd)**2*r2**(-2))
+          !bx(ix,iy,iz) = b1 + bx(ix,iy,iz)
 
-          r2 = SQRT((xc(ix))**2 + (zb(iz)-zd)**2)
-          b1 = -3._num*bd*(zb(iz)-zd)*xc(ix)*r2**(-5)
-          bz(ix,iy,iz) = b1 + bz(ix,iy,iz)
-        END DO
-      END DO
-    END DO
+          !r2 = SQRT((xc(ix))**2 + (zb(iz)-zd)**2)
+          !b1 = -3._num*bd*(zb(iz)-zd)*xc(ix)*r2**(-5)
+          !bz(ix,iy,iz) = b1 + bz(ix,iy,iz)
+        !END DO
+      !END DO
+    !END DO
 
     ! Insert tube with axis pointing in y-dir
-    DO ix = -1, nx+1
-      DO iz = -1, nz+1
-        DO iy = -1, ny+1
-          r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
-          b1 = bFlux*EXP(-r2/r0**2)
-          by(ix,iy,iz) = b1 + by(ix,iy,iz)
+    !DO ix = -1, nx+1
+      !DO iz = -1, nz+1
+        !DO iy = -1, ny+1
+          !r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+          !b1 = bFlux*EXP(-r2/r0**2)
+          !by(ix,iy,iz) = b1 + by(ix,iy,iz)
 
-          r2 = (xb(ix)-x0)**2 + (zc(iz)-z0)**2
-          b1 = bFlux*EXP(-r2/r0**2)
-          bx(ix,iy,iz) = -b1*alpha*(zc(iz)-z0) + bx(ix,iy,iz)
+          !r2 = (xb(ix)-x0)**2 + (zc(iz)-z0)**2
+          !b1 = bFlux*EXP(-r2/r0**2)
+          !bx(ix,iy,iz) = -b1*alpha*(zc(iz)-z0) + bx(ix,iy,iz)
 
-          r2 = (xc(ix)-x0)**2 + (zb(iz)-z0)**2
-          b1 = bFlux*EXP(-r2/r0**2)
-          bz(ix,iy,iz) = b1*alpha*(xc(ix)-x0) + bz(ix,iy,iz)
+          !r2 = (xc(ix)-x0)**2 + (zb(iz)-z0)**2
+          !b1 = bFlux*EXP(-r2/r0**2)
+          !bz(ix,iy,iz) = b1*alpha*(xc(ix)-x0) + bz(ix,iy,iz)
 
-          r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
-          b1 = bFlux**2 * EXP(-2.0_num*r2/r0**2) * &    ! Not field but pexc.
-               (1.0_num + r2*alpha**2 - alpha**2*r0**2*0.5_num) * 0.5_num
-          p = energy(ix,iy,iz)*rho(ix,iy,iz)*(gamma-1.0_num)
-          buoyant_factor = EXP(-((yc(iy)/lambda)**2))
-          rho(ix,iy,iz) = rho(ix,iy,iz) - rho(ix,iy,iz) * &
-               b1/p*buoyant_factor
-          p = p - b1
-          energy(ix,iy,iz) = p/(rho(ix,iy,iz)*(gamma-1.0_num))
-        END DO
-      END DO
-    END DO
+          !r2 = (xc(ix)-x0)**2 + (zc(iz)-z0)**2
+          !b1 = bFlux**2 * EXP(-2.0_num*r2/r0**2) * &    ! Not field but pexc.
+               !(1.0_num + r2*alpha**2 - alpha**2*r0**2*0.5_num) * 0.5_num
+          !p = energy(ix,iy,iz)*rho(ix,iy,iz)*(gamma-1.0_num)
+          !buoyant_factor = EXP(-((yc(iy)/lambda)**2))
+          !rho(ix,iy,iz) = rho(ix,iy,iz) - rho(ix,iy,iz) * &
+               !b1/p*buoyant_factor
+          !p = p - b1
+          !energy(ix,iy,iz) = p/(rho(ix,iy,iz)*(gamma-1.0_num))
+        !END DO
+      !END DO
+    !END DO
 
     DEALLOCATE(zc_global, dzb_global, dzc_global)
     DEALLOCATE(temp_ref, rho_ref)
