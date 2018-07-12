@@ -185,6 +185,7 @@ CONTAINS
     brag_alpha = 6._num
     switching_param = 20.0_num
 
+    ! Minimum density when using -DLIMIT_DENSITY
     min_density = 1.0e-9_num
 
   END SUBROUTINE control_variables
