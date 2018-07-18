@@ -206,6 +206,7 @@ CONTAINS
     switching_param = 150.0_num
 
     twisting_velocity = 0.5_num
+    ramp_time = 1.0_num
   END SUBROUTINE control_variables
 
 
