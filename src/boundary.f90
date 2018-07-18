@@ -250,9 +250,9 @@ CONTAINS
     !END IF
 
     ! --- simple ramp up twisting ---
-    twist = 0.5_num*twisting_velocity*pi*(1.0_num + TANH((time_in/ramp_time - 2.0_num)))
+    twist = 0.5_num*twisting_velocity*(1.0_num + TANH((time_in/ramp_time - 2.0_num)))
 
-    velocity_coeff = twist*SIN(pi*r)*in_circle_flag/MAX(r, none_zero)
+    velocity_coeff = twist*(SIN(pi*r)**2)*in_circle_flag/MAX(r, none_zero)
     RETURN
   END FUNCTION
 
