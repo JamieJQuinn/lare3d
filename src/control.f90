@@ -203,7 +203,9 @@ CONTAINS
     brag_alpha = 1.201632375e-4_num/RHO0
     !switching_param = brag_alpha**2
     ! This value of the switching parameter will give null points a resolution of around 10gps
-    switching_param = 150
+    switching_param = 150.0_num
+
+    twisting_velocity = 0.5_num
   END SUBROUTINE control_variables
 
 
