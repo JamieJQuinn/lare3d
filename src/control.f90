@@ -97,14 +97,14 @@ CONTAINS
     nprocz = 0
 
     ! The length of the domain in the x direction
-    x_min = -3.0_num
-    x_max =  3.0_num
+    x_min = -3.5_num
+    x_max =  3.5_num
     ! Should the x grid be stretched or uniform
     x_stretch = .FALSE.
 
     ! The length of the domain in the y direction
-    y_min = -3.0_num
-    y_max =  3.0_num
+    y_min = -3.5_num
+    y_max =  3.5_num
     ! Should the y grid be stretched or uniform
     y_stretch = .FALSE.
 
