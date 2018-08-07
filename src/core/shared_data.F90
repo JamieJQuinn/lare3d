@@ -156,6 +156,9 @@ MODULE shared_data
   REAL(num) :: brag_alpha
   REAL(num) :: switching_param
 
+  ! Twisting Velocity
+  REAL(num) :: twisting_velocity, ramp_time
+
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)
   INTEGER, DIMENSION(:), ALLOCATABLE :: cell_nx_mins, cell_nx_maxs

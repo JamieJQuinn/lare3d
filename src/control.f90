@@ -202,6 +202,9 @@ CONTAINS
     ! Coronal temp taken to be 1e6 K
     brag_alpha = 1.201632375e-4_num/RHO0
     switching_param = 150
+
+    twisting_velocity = 0.5_num
+    ramp_time = 0.25_num
   END SUBROUTINE control_variables
 
 

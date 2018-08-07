@@ -234,9 +234,9 @@ CONTAINS
   ! Full timestep velocity boundary conditions
   !****************************************************************************
 
-  REAL(num) FUNCTION velocity_coeff(twist, x, y)
-    REAL(num), INTENT(IN) :: twist, x, y
-    REAL(num) :: in_circle_flag, r
+  REAL(num) FUNCTION velocity_coeff(time_in, x, y)
+    REAL(num), INTENT(IN) :: time_in, x, y
+    REAL(num) :: in_circle_flag, r, twist
 
     r = SQRT(x**2 + y**2)
 
@@ -249,10 +249,10 @@ CONTAINS
       !in_circle_flag = 1.0_num
     !END IF
 
-    velocity_coeff = twist*SIN(pi*r)*in_circle_flag
-    IF (r > none_zero) THEN
-      velocity_coeff = velocity_coeff/r
-    END IF
+    ! --- simple ramp up twisting ---
+    twist = 0.5_num*twisting_velocity*(1.0_num + TANH((time_in/ramp_time - 2.0_num)))
+
+    velocity_coeff = twist*(SIN(pi*r)**2)*in_circle_flag/MAX(r, none_zero)
     RETURN
   END FUNCTION
 
@@ -286,23 +286,11 @@ CONTAINS
       vz(:,ny:ny+2,:) = 0.0_num
     END IF
 
-    ! --- simple ramp up twisting ---
-    twist = 0.025_num*pi*(1.0_num + TANH(time/2.0_num - 2.0_num))
-
-    ! --- ramp up twisting then ramp down ---
-    !IF (time < 27.0_num) THEN
-      !! ramp up twist
-      !twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time - 2.0_num)))
-    !ELSE
-      !! ramp down twist
-      !twist = 0.025_num*pi*(1.0_num - TANH(2.0_num*(time - 29.0_num)))
-    !END IF
-
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = -2, ny+2
         DO ix = -2, nx+2
-          vx(ix,iy,-2:0) = -yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
-          vy(ix,iy,-2:0) =  xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
+          vx(ix,iy,-2:0) = -yb(iy)*velocity_coeff(time, xb(ix), yb(iy))
+          vy(ix,iy,-2:0) =  xb(ix)*velocity_coeff(time, xb(ix), yb(iy))
         END DO
       END DO
       vz(:,:,-2:0) = 0.0_num
@@ -311,8 +299,8 @@ CONTAINS
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
       DO iy = -2, ny+2
         DO ix = -2, nx+2
-          vx(ix,iy,nz:nz+2) =  yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
-          vy(ix,iy,nz:nz+2) = -xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
+          vx(ix,iy,nz:nz+2) =  yb(iy)*velocity_coeff(time, xb(ix), yb(iy))
+          vy(ix,iy,nz:nz+2) = -xb(ix)*velocity_coeff(time, xb(ix), yb(iy))
         END DO
       END DO
       vz(:,:,nz:nz+2) = 0.0_num
@@ -356,22 +344,11 @@ CONTAINS
       vz1(:,ny:ny+2,:) = 0.0_num
     END IF
 
-    twist = 0.025_num*pi*(1.0_num + TANH((time+dt2)/2.0_num - 2.0_num))
-
-    ! --- ramp up twisting then ramp down ---
-    !IF (time < 27.0_num) THEN
-      !! ramp up twist
-      !twist = 0.025_num*pi*(1.0_num + TANH(2.0_num*(time + dt2 - 2.0_num)))
-    !ELSE
-      !! ramp down twist
-      !twist = 0.025_num*pi*(1.0_num - TANH(2.0_num*(time + dt2 - 29.0_num)))
-    !END IF
-
     IF (proc_z_min == MPI_PROC_NULL .AND. zbc_min == BC_OTHER) THEN
       DO iy = -2, ny+2
         DO ix = -2, nx+2
-          vx1(ix,iy,-2:0) = -yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
-          vy1(ix,iy,-2:0) =  xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
+          vx1(ix,iy,-2:0) = -yb(iy)*velocity_coeff(time+dt2, xb(ix), yb(iy))
+          vy1(ix,iy,-2:0) =  xb(ix)*velocity_coeff(time+dt2, xb(ix), yb(iy))
         END DO
       END DO
       vz1(:,:,-2:0) = 0.0_num
@@ -380,8 +357,8 @@ CONTAINS
     IF (proc_z_max == MPI_PROC_NULL .AND. zbc_max == BC_OTHER) THEN
       DO iy = -2, ny+2
         DO ix = -2, nx+2
-          vx1(ix,iy,nz:nz+2) =  yb(iy)*velocity_coeff(twist, xb(ix), yb(iy))
-          vy1(ix,iy,nz:nz+2) = -xb(ix)*velocity_coeff(twist, xb(ix), yb(iy))
+          vx1(ix,iy,nz:nz+2) =  yb(iy)*velocity_coeff(time+dt2, xb(ix), yb(iy))
+          vy1(ix,iy,nz:nz+2) = -xb(ix)*velocity_coeff(time+dt2, xb(ix), yb(iy))
         END DO
       END DO
       vz1(:,:,nz:nz+2) = 0.0_num
