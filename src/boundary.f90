@@ -240,19 +240,10 @@ CONTAINS
 
     r = SQRT(x**2 + y**2)
 
-    ! If r < 1
-    in_circle_flag = 1.0_num - r
-    in_circle_flag = (SIGN(1.0_num, in_circle_flag) + 1.0_num) * 0.5_num
-    !IF (r>=1.0_num) THEN
-      !in_circle_flag = 0.0_num
-    !ELSE
-      !in_circle_flag = 1.0_num
-    !END IF
+    ! Twisting profile from Wyper & Pontin 2013
+    twist = twisting_velocity*TANH(time_in/ramp_time)**2
 
-    ! --- simple ramp up twisting ---
-    twist = 0.5_num*twisting_velocity*(1.0_num + TANH((time_in/ramp_time - 2.0_num)))
-
-    velocity_coeff = twist*(SIN(pi*r)**2)*in_circle_flag/MAX(r, none_zero)
+    velocity_coeff = twist*r*(1.0_num + TANH(1.0_num - 36.0_num*(r**2)))
     RETURN
   END FUNCTION
 
