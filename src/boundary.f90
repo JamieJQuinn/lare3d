@@ -241,9 +241,9 @@ CONTAINS
     r = SQRT(x**2 + y**2)
 
     ! Twisting profile from Wyper & Pontin 2013
-    twist = twisting_velocity*TANH(time_in/ramp_time)**2
+    twist = 2.0_num*twisting_velocity*TANH(time_in/ramp_time)**2
 
-    velocity_coeff = twist*r*(1.0_num + TANH(1.0_num - 36.0_num*(r**2)))
+    velocity_coeff = twist*r*(1.0_num + TANH(1.0_num - 5.0_num*(r**2)))
     RETURN
   END FUNCTION
 
