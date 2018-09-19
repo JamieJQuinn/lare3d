@@ -165,7 +165,7 @@ CONTAINS
     ! Set to true to turn on routine for damped boundaries.
     ! These routines are in boundary.f90 and you should check that they
     ! actually do what you want.
-    damping = .TRUE.
+    damping = .FALSE.
 
     ! Set the equation of state. Valid choices are
     ! EOS_IDEAL - Simple ideal gas for perfectly ionised plasma
@@ -183,7 +183,7 @@ CONTAINS
 
     ! Anisotropic viscosity parameters
     brag_alpha = 6._num
-    switching_param = 20.0_num
+    switching_param = 150.0_num
 
     min_density = 1.0e-9_num
 
@@ -201,7 +201,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 10.0_num
+    dt_snapshots = 25.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
@@ -239,6 +239,7 @@ CONTAINS
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
+    dump_mask(14:15) = .FALSE.
     dump_mask(22:25) = .TRUE.
 
   END SUBROUTINE set_output_dumps
