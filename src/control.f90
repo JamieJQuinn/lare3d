@@ -66,21 +66,21 @@ CONTAINS
     !nz_global = 256
 
     ! Mid res
-    nx_global = 256
-    ny_global = 256
-    nz_global = 512
+    !nx_global = 256
+    !ny_global = 256
+    !nz_global = 512
 
     ! High res
-    !nx_global = 512
-    !ny_global = 512
-    !nz_global = 1024
+    nx_global = 512
+    ny_global = 512
+    nz_global = 1024
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 300.0_num
+    t_end = 200.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -201,7 +201,7 @@ CONTAINS
     ! collision time from Braginskii 1965
     ! Coronal temp taken to be 1e6 K
     brag_alpha = 1.201632375e-4_num/RHO0
-    switching_param = brag_alpha**2
+    switching_param = 150
   END SUBROUTINE control_variables
 
 
@@ -254,7 +254,8 @@ CONTAINS
     IF (eos_number /= EOS_IDEAL) dump_mask(14) = .TRUE.
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
-    dump_mask(20:25) = .TRUE.
+    dump_mask(14:16) = .FALSE.
+    dump_mask(22:25) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 
