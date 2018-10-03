@@ -109,8 +109,8 @@ CONTAINS
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -3.0_num
-    z_max =  3.0_num
+    z_min = -0.25_num
+    z_max =  0.25_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
@@ -221,7 +221,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 5.0_num
+    dt_snapshots = 1.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
