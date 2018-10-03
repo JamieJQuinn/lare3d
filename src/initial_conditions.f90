@@ -53,7 +53,7 @@ CONTAINS
 
     T0 = (B0**2)*mf*mh_si/(kb_si*mu0_si*RHO0)
 
-    energy = 1.0_num/(gamma-1.0_num)*1.0e6_num/T0
+    energy = 5.0_num/4.0_num
     rho = 1.0_num
     grav = 0.0_num
 
