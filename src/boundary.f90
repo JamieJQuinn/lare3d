@@ -243,7 +243,7 @@ CONTAINS
     ! Twisting profile from Wyper & Pontin 2013
     twist = twisting_velocity*TANH(time_in/ramp_time)**2
 
-    velocity_coeff = twist*r*(1.0_num + TANH(1.0_num - 36.0_num*(r**2)))
+    velocity_coeff = twist*(1.0_num + TANH(1.0_num - 36.0_num*(r**2)))
     RETURN
   END FUNCTION
 
