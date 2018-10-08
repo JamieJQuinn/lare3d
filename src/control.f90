@@ -205,8 +205,8 @@ CONTAINS
     ! This value of the switching parameter will give null points a resolution of around 10gps
     switching_param = 150.0_num
 
-    twisting_velocity = 0.05_num
-    ramp_time = 2.0_num
+    twisting_velocity = 0.5_num
+    ramp_time = 0.25_num
   END SUBROUTINE control_variables
 
 
