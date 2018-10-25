@@ -588,7 +588,7 @@ CONTAINS
     REAL(num), SAVE :: t1 = 0.0_num
 
     IF (restart) THEN
-      t1 = time_prev + dt_snapshots
+      t1 = time + dt_snapshots
     END IF
 
     print_arrays = .FALSE.
