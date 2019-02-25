@@ -84,6 +84,10 @@ CONTAINS
       var_local(5,ndump) = total_ohmic_heating
       var_local(6,ndump) = en_ke_parallel
       var_local(7,ndump) = en_ke_perp
+      var_local(8,ndump) = max_jx
+      var_local(9,ndump) = max_jy
+      var_local(10,ndump) = max_jz
+      var_local(11,ndump) = max_j
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
@@ -91,13 +95,21 @@ CONTAINS
 
       IF (ndump == dump_frequency .OR. last_call) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-3) * ndump, &
+        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-7) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
+        do i= 8,11
+          CALL MPI_REDUCE(var_local(i,:), var_sum(i,:), ndump, &
+              MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
+        end do
         CALL MPI_REDUCE(visc_local, visc_max, 2 * ndump, &
             MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
 #else
-        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-1) * ndump, &
+        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-5) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
+        do i= 8,11
+          CALL MPI_REDUCE(var_local(i,:), var_sum(i,:), ndump, &
+              MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
+        end do
 #endif
 
         visc_heating_updated = .TRUE.
@@ -942,7 +954,11 @@ CONTAINS
     varnames(6) = 'heating_ohmic'
     varnames(7) = 'en_ke_parallel'
     varnames(8) = 'en_ke_perp'
-    varname_idx = 8
+    varnames(9) = 'max_jx'
+    varnames(10) = 'max_jy'
+    varnames(11) = 'max_jz'
+    varnames(12) = 'max_j'
+    varname_idx = 12
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
     varnames(varname_idx+1) = 'max_heating_iso_visc'
     varnames(varname_idx+2) = 'max_heating_aniso_visc'
