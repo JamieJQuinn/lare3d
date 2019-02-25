@@ -39,6 +39,7 @@ CONTAINS
     REAL(num) :: en_ke_parallel = 0.0_num, en_ke_perp = 0.0_num
     REAL(num), ALLOCATABLE, SAVE :: t_out(:)
     REAL(dbl), ALLOCATABLE, SAVE :: var_local(:,:), var_sum(:,:)
+    REAL(dbl), ALLOCATABLE, SAVE :: var_local_max(:,:), var_max(:,:)
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
     REAL(dbl), ALLOCATABLE, SAVE :: visc_local(:,:), visc_max(:,:)
 #endif
@@ -57,17 +58,21 @@ CONTAINS
     IF (MOD(step, history_frequency) == 0 .OR. last_call) THEN
       IF (first) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-        ALLOCATE(var_local(en_nvars-3,dump_frequency))
+        ALLOCATE(var_local(en_nvars-7,dump_frequency))
+        ALLOCATE(var_local_max(4,dump_frequency))
         ALLOCATE(visc_local(2,dump_frequency))
 #else
-        ALLOCATE(var_local(en_nvars-1,dump_frequency))
+        ALLOCATE(var_local(en_nvars-5,dump_frequency))
+        ALLOCATE(var_local_max(4,dump_frequency))
 #endif
         IF (rank == 0) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
           ALLOCATE(visc_max(2,dump_frequency))
-          ALLOCATE(var_sum(en_nvars-3,dump_frequency))
+          ALLOCATE(var_sum(en_nvars-7,dump_frequency))
+          ALLOCATE(var_max(4,dump_frequency))
 #else
-          ALLOCATE(var_sum(en_nvars-1,dump_frequency))
+          ALLOCATE(var_sum(en_nvars-5,dump_frequency))
+          ALLOCATE(var_max(4,dump_frequency))
 #endif
           ALLOCATE(t_out(dump_frequency))
         END IF
@@ -84,10 +89,10 @@ CONTAINS
       var_local(5,ndump) = total_ohmic_heating
       var_local(6,ndump) = en_ke_parallel
       var_local(7,ndump) = en_ke_perp
-      var_local(8,ndump) = max_jx
-      var_local(9,ndump) = max_jy
-      var_local(10,ndump) = max_jz
-      var_local(11,ndump) = max_j
+      var_local_max(1,ndump) = max_jx
+      var_local_max(2,ndump) = max_jy
+      var_local_max(3,ndump) = max_jz
+      var_local_max(4,ndump) = max_j
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
@@ -97,19 +102,15 @@ CONTAINS
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
         CALL MPI_REDUCE(var_local, var_sum, (en_nvars-7) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
-        do i= 8,11
-          CALL MPI_REDUCE(var_local(i,:), var_sum(i,:), ndump, &
-              MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
-        end do
+        CALL MPI_REDUCE(var_local_max, var_max, 4*ndump, &
+            MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
         CALL MPI_REDUCE(visc_local, visc_max, 2 * ndump, &
             MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
 #else
         CALL MPI_REDUCE(var_local, var_sum, (en_nvars-5) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
-        do i= 8,11
-          CALL MPI_REDUCE(var_local(i,:), var_sum(i,:), ndump, &
-              MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
-        end do
+        CALL MPI_REDUCE(var_local_max, var_max, 4*ndump, &
+            MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
 #endif
 
         visc_heating_updated = .TRUE.
@@ -118,9 +119,9 @@ CONTAINS
           visc_heating = var_sum(4,ndump)
           DO i = 1, ndump
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-            WRITE(en_unit) t_out(i), REAL(var_sum(:,i), num), REAL(visc_max(:,i), num)
+            WRITE(en_unit) t_out(i), REAL(var_sum(:,i), num), REAL(var_max(:,i), num), REAL(visc_max(:,i), num)
 #else
-            WRITE(en_unit) t_out(i), REAL(var_sum(:,i), num)
+            WRITE(en_unit) t_out(i), REAL(var_sum(:,i), num), REAL(var_max(:,i), num)
 #endif
           END DO
         END IF
@@ -139,6 +140,8 @@ CONTAINS
 
       IF (ALLOCATED(var_local)) DEALLOCATE(var_local)
       IF (ALLOCATED(var_sum)) DEALLOCATE(var_sum)
+      IF (ALLOCATED(var_local_max)) DEALLOCATE(var_local_max)
+      IF (ALLOCATED(var_max)) DEALLOCATE(var_max)
       IF (ALLOCATED(t_out)) DEALLOCATE(t_out)
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
       IF (ALLOCATED(visc_max)) DEALLOCATE(visc_max)
