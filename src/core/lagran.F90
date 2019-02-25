@@ -285,6 +285,9 @@ CONTAINS
           max_jy = MAX(jy, max_jy)
           max_jz = MAX(jz, max_jz)
 
+          max_j = MAX(SQRT(jx*jx + jy*jy + jz*jz), max_j)
+
+
           bxv = (bx1(ix,iy ,iz ) + bx1(ixp,iy ,iz )  &
               +  bx1(ix,iyp,iz ) + bx1(ixp,iyp,iz )  &
               +  bx1(ix,iy ,izp) + bx1(ixp,iy ,izp)  &
@@ -335,8 +338,6 @@ CONTAINS
         END DO
       END DO
     END DO
-
-    max_j = SQRT(max_jx*max_jx + max_jy*max_jy + max_jz*max_jz)
 
     CALL remap_v_bcs
 
