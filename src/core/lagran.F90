@@ -336,7 +336,7 @@ CONTAINS
       END DO
     END DO
 
-    max_j = SQRT(max_jx*max_jx + max_jy*max_jy + max_jz + max_jz)
+    max_j = SQRT(max_jx*max_jx + max_jy*max_jy + max_jz*max_jz)
 
     CALL remap_v_bcs
 
