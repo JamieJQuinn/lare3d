@@ -142,6 +142,8 @@ CONTAINS
       END DO
     END DO
 
+    max_j = 0.0_num
+
     DO iz = 0, nz
       izp = iz + 1
       DO iy = 0, ny
@@ -280,10 +282,6 @@ CONTAINS
           w2 = (bx1(ix ,iyp,iz ) + bx1(ixp,iyp,iz ) &
               + bx1(ix ,iyp,izp) + bx1(ixp,iyp,izp)) / cvyp
           jz = jz - (w2 - w1) / dyc(iy)
-
-          max_jx = MAX(jx, max_jx)
-          max_jy = MAX(jy, max_jy)
-          max_jz = MAX(jz, max_jz)
 
           max_j = MAX(SQRT(jx*jx + jy*jy + jz*jz), max_j)
 

@@ -58,21 +58,21 @@ CONTAINS
     IF (MOD(step, history_frequency) == 0 .OR. last_call) THEN
       IF (first) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-        ALLOCATE(var_local(en_nvars-7,dump_frequency))
-        ALLOCATE(var_local_max(4,dump_frequency))
+        ALLOCATE(var_local(en_nvars-4,dump_frequency))
+        ALLOCATE(var_local_max(1,dump_frequency))
         ALLOCATE(visc_local(2,dump_frequency))
 #else
-        ALLOCATE(var_local(en_nvars-5,dump_frequency))
-        ALLOCATE(var_local_max(4,dump_frequency))
+        ALLOCATE(var_local(en_nvars-2,dump_frequency))
+        ALLOCATE(var_local_max(1,dump_frequency))
 #endif
         IF (rank == 0) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
           ALLOCATE(visc_max(2,dump_frequency))
-          ALLOCATE(var_sum(en_nvars-7,dump_frequency))
-          ALLOCATE(var_max(4,dump_frequency))
+          ALLOCATE(var_sum(en_nvars-4,dump_frequency))
+          ALLOCATE(var_max(1,dump_frequency))
 #else
-          ALLOCATE(var_sum(en_nvars-5,dump_frequency))
-          ALLOCATE(var_max(4,dump_frequency))
+          ALLOCATE(var_sum(en_nvars-2,dump_frequency))
+          ALLOCATE(var_max(1,dump_frequency))
 #endif
           ALLOCATE(t_out(dump_frequency))
         END IF
@@ -89,10 +89,7 @@ CONTAINS
       var_local(5,ndump) = total_ohmic_heating
       var_local(6,ndump) = en_ke_parallel
       var_local(7,ndump) = en_ke_perp
-      var_local_max(1,ndump) = max_jx
-      var_local_max(2,ndump) = max_jy
-      var_local_max(3,ndump) = max_jz
-      var_local_max(4,ndump) = max_j
+      var_local_max(1,ndump) = max_j
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
       visc_local(1,ndump) = calc_max_visc_heating(.TRUE.)
       visc_local(2,ndump) = calc_max_visc_heating(.FALSE.)
@@ -100,16 +97,16 @@ CONTAINS
 
       IF (ndump == dump_frequency .OR. last_call) THEN
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
-        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-7) * ndump, &
+        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-4) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
-        CALL MPI_REDUCE(var_local_max, var_max, 4*ndump, &
+        CALL MPI_REDUCE(var_local_max, var_max, ndump, &
             MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
         CALL MPI_REDUCE(visc_local, visc_max, 2 * ndump, &
             MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
 #else
-        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-5) * ndump, &
+        CALL MPI_REDUCE(var_local, var_sum, (en_nvars-2) * ndump, &
             MPI_DOUBLE_PRECISION, MPI_SUM, 0, comm, errcode)
-        CALL MPI_REDUCE(var_local_max, var_max, 4*ndump, &
+        CALL MPI_REDUCE(var_local_max, var_max, ndump, &
             MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, errcode)
 #endif
 
@@ -957,11 +954,8 @@ CONTAINS
     varnames(6) = 'heating_ohmic'
     varnames(7) = 'en_ke_parallel'
     varnames(8) = 'en_ke_perp'
-    varnames(9) = 'max_jx'
-    varnames(10) = 'max_jy'
-    varnames(11) = 'max_jz'
-    varnames(12) = 'max_j'
-    varname_idx = 12
+    varnames(9) = 'max_j'
+    varname_idx = 9
 #ifdef OUTPUT_CONTINUOUS_VISC_HEATING
     varnames(varname_idx+1) = 'max_heating_iso_visc'
     varnames(varname_idx+2) = 'max_heating_aniso_visc'

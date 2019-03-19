@@ -181,6 +181,10 @@ CONTAINS
       calc_switching2 = 1.0_num
     END IF
 
+    if (fix_switching .eqv. .true.) then
+      calc_switching2 = fixed_switching_function
+    endif
+
     ! Ensure switching stays between 0 & 1
     calc_switching2 = MIN(calc_switching2, 1.0_num)
     calc_switching2 = MAX(calc_switching2, 0.0_num)

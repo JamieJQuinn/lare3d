@@ -114,7 +114,7 @@ MODULE shared_data
   REAL(num) :: z_min, z_max, length_z
   REAL(num) :: gamma, eta0, j_max, dt_snapshots, eta_background
   REAL(num) :: total_visc_heating = 0.0_num, total_ohmic_heating = 0.0_num
-  REAL(num) :: max_jx, max_jy, max_jz, max_j
+  REAL(num) :: max_j
 
   INTEGER :: xbc_min, xbc_max, ix, ixm, ixp, xpass
   INTEGER :: ybc_min, ybc_max, iy, iym, iyp, ypass
@@ -156,6 +156,8 @@ MODULE shared_data
   ! Anisotropic viscosity
   REAL(num) :: brag_alpha
   REAL(num) :: switching_param
+  LOGICAL :: fix_switching
+  REAL(num) :: fixed_switching_function
 
   ! MPI data
   INTEGER :: coordinates(c_ndims), n_global_min(c_ndims), n_global_max(c_ndims)
@@ -183,7 +185,7 @@ MODULE shared_data
   INTEGER :: subtype, obstype
   INTEGER :: initial
   INTEGER, PARAMETER :: n_zeros = 4
-  INTEGER:: en_nvars = 12
+  INTEGER:: en_nvars = 9
   INTEGER :: file_number = 0
 #ifdef FILEPREFIX
   CHARACTER(LEN=4), PARAMETER :: filesystem = 'nfs:'

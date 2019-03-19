@@ -202,6 +202,10 @@ CONTAINS
     ! Coronal temp taken to be 1e6 K
     brag_alpha = 1.201632375e-4_num/RHO0
     switching_param = 150
+
+    ! Allows the fixing of the switching function to definite values between 0 and 1
+    fix_switching = .false.
+    fixed_switching_function = 0
   END SUBROUTINE control_variables
 
 
