@@ -364,17 +364,18 @@ CONTAINS
     ! These are not generic, always work damping options.
     ! Users should change the damping scheme for each problem
 
-    REAL(num) :: a, d
+    REAL(num) :: a, d, r
 
     IF (.NOT.damping) RETURN
 
     IF (proc_x_min == MPI_PROC_NULL) THEN
-      d = 0.85_num * x_min
+      d = 2.8_num
       DO iz = -1, nz + 1
         DO iy = -1, ny + 1
           DO ix = -1, nx + 1
-            IF (xb(ix) < d) THEN
-              a = dt * (xb(ix) - d) / (x_min - d) + 1.0_num
+            r = SQRT(xb(ix)**2 + yb(iy)**2)
+            IF (r > d) THEN
+              a = dt * (r - d) / (x_max - d) + 1.0_num
               vx(ix,iy,iz) = vx(ix,iy,iz) / a
               vy(ix,iy,iz) = vy(ix,iy,iz) / a
               vz(ix,iy,iz) = vz(ix,iy,iz) / a
@@ -385,12 +386,13 @@ CONTAINS
     END IF
 
     IF (proc_x_max == MPI_PROC_NULL) THEN
-      d = 0.85_num * x_max
+      d = 2.8_num
       DO iz = -1, nz + 1
         DO iy = -1, ny + 1
           DO ix = -1, nx + 1
-            IF (xb(ix) > d) THEN
-              a = dt * (xb(ix) - d) / (x_max - d) + 1.0_num
+            r = SQRT(xb(ix)**2 + yb(iy)**2)
+            IF (r > d) THEN
+              a = dt * (r - d) / (x_max - d) + 1.0_num
               vx(ix,iy,iz) = vx(ix,iy,iz) / a
               vy(ix,iy,iz) = vy(ix,iy,iz) / a
               vz(ix,iy,iz) = vz(ix,iy,iz) / a
@@ -401,13 +403,14 @@ CONTAINS
     END IF
 
     IF (proc_y_min == MPI_PROC_NULL) THEN
-      d = 0.85_num * y_min
+      d = 2.8_num
       DO iz = -1, nz + 1
         DO iy = -1, ny + 1
           DO ix = -1, nx + 1
-            IF (yb(iy) < d) THEN
-              a = dt * (yb(iy) - d) / (y_min - d) + 1.0_num
-              vx(ix,iy,iz) = vx(ix,iy,iz) / a
+            r = SQRT(xb(ix)**2 + yb(iy)**2)
+            IF (r > d) THEN
+              a = dt * (r - d) / (x_max - d) + 1.0_num
+              vx(ix,iy,iz) = vx(ix,iy,iz) * a
               vy(ix,iy,iz) = vy(ix,iy,iz) / a
               vz(ix,iy,iz) = vz(ix,iy,iz) / a
             END IF
@@ -417,13 +420,14 @@ CONTAINS
     END IF
 
     IF (proc_y_max == MPI_PROC_NULL) THEN
-      d = 0.85_num * y_max
+      d = 2.8_num
       DO iz = -1, nz + 1
         DO iy = -1, ny + 1
           DO ix = -1, nx + 1
-            IF (yb(iy) > d) THEN
-              a = dt * (yb(iy) - d) / (y_max - d) + 1.0_num
-              vx(ix,iy,iz) = vx(ix,iy,iz) / a
+            r = SQRT(xb(ix)**2 + yb(iy)**2)
+            IF (r > d) THEN
+              a = dt * (r - d) / (x_max - d) + 1.0_num
+              vx(ix,iy,iz) = vx(ix,iy,iz) * a
               vy(ix,iy,iz) = vy(ix,iy,iz) / a
               vz(ix,iy,iz) = vz(ix,iy,iz) / a
             END IF
