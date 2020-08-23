@@ -145,7 +145,9 @@ CONTAINS
 
     xi2 = (brag_alpha**2) * mB2
 
-    calc_switching2 = xi**2*(144.0*xi**2 + 509.4*xi**1 + 330.2964)/(144.0*xi**4 + 725.4*xi**3 + 925.8624*xi**2 + 404.4105*xi**1 + 44.7561)
+    calc_switching2 = xi2**2*(144.0_num*xi2**2 + 509.4_num*xi2**1 + 330.2964_num) &
+      /(144.0_num*xi2**4 + 725.4_num*xi2**3 &
+      + 925.8624_num*xi2**2 + 404.4105_num*xi2**1 + 44.7561_num)
 
     ! specify dependence of concentration param a on mag field
     !a = switching_param * mB2
