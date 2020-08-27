@@ -141,45 +141,51 @@ CONTAINS
   REAL(num) FUNCTION calc_switching2(mB2)
     ! evaluates interpolation function
     REAL(num), INTENT(IN) :: mB2
-    REAL(num) :: a
+    REAL(num) :: a, xi2
+
+    xi2 = (brag_alpha**2) * mB2
+
+    calc_switching2 = xi2**2*(144.0_num*xi2**2 + 509.4_num*xi2 + 330.2964_num) &
+      /(144.0_num*xi2**4 + 725.4_num*xi2**3 &
+      + 925.8624_num*xi2**2 + 404.4105_num*xi2 + 44.7561_num)
 
     ! specify dependence of concentration param a on mag field
-    a = switching_param * mB2
+    !a = switching_param * mB2
 
-    IF (a < 0.5051_num) THEN
-      calc_switching2 = &
-        0.203207286957195e-1_num*a+0.843989591678155e-1_num*a**3
-    ELSE IF (a > 0.5051_num .AND. a < 1.54_num) THEN
-      calc_switching2 = &
-        0.159559056317913e-1_num-0.744480634040214e-1_num*a &
-        +.187623821223007_num*a**2-0.394206285197758e-1_num*a**3
-    ELSE IF (a > 1.54_num .AND. a < 3.011_num) THEN
-      calc_switching2 = &
-        -0.887980204109068e-1_num+.129618026285783_num*a &
-        +0.551133733724845e-1_num*a**2-0.107387134006150e-1_num*a**3
-    ELSE IF (a > 3.011_num .AND. a < 6.071_num) THEN
-      calc_switching2 = &
-        -0.498332905576744_num+.537656769397807_num*a &
-        -0.804026489164638e-1_num*a**2+0.426361387592081e-2_num*a**3
-    ELSE IF (a > 6.071_num .AND. a < 12.97_num) THEN
-      calc_switching2 = &
-        0.432999470914707_num+0.774365207593949e-1_num*a &
-        -0.459631575250207e-2_num*a**2+0.101403742282107e-3_num*a**3
-    ELSE IF (a > 12.97_num .AND. a < 22.59_num) THEN
-      calc_switching2 = &
-        0.609014168122852_num+0.367237920294194e-1_num*a &
-        -0.145732356052247e-2_num*a**2+0.207305941973063e-4_num*a**3
-    ELSE IF (a > 22.59_num .AND. a < 29.41_num) THEN
-      calc_switching2 = &
-        0.852464153339503_num+0.439311670189453e-2_num*a &
-        -0.261294335846660e-4_num*a**2-3.87808147946726e-7_num*a**3
-    ELSE IF (a < 29.41_num) THEN
-      calc_switching2 = &
-        0.816478868872687_num+0.806383596073046e-2_num*a &
-        -0.150941377101699e-3_num*a**2+0.102681208912720e-5_num*a**3
-    ELSE
-      calc_switching2 = 1.0_num
-    END IF
+    !IF (a < 0.5051_num) THEN
+      !calc_switching2 = &
+        !0.203207286957195e-1_num*a+0.843989591678155e-1_num*a**3
+    !ELSE IF (a > 0.5051_num .AND. a < 1.54_num) THEN
+      !calc_switching2 = &
+        !0.159559056317913e-1_num-0.744480634040214e-1_num*a &
+        !+.187623821223007_num*a**2-0.394206285197758e-1_num*a**3
+    !ELSE IF (a > 1.54_num .AND. a < 3.011_num) THEN
+      !calc_switching2 = &
+        !-0.887980204109068e-1_num+.129618026285783_num*a &
+        !+0.551133733724845e-1_num*a**2-0.107387134006150e-1_num*a**3
+    !ELSE IF (a > 3.011_num .AND. a < 6.071_num) THEN
+      !calc_switching2 = &
+        !-0.498332905576744_num+.537656769397807_num*a &
+        !-0.804026489164638e-1_num*a**2+0.426361387592081e-2_num*a**3
+    !ELSE IF (a > 6.071_num .AND. a < 12.97_num) THEN
+      !calc_switching2 = &
+        !0.432999470914707_num+0.774365207593949e-1_num*a &
+        !-0.459631575250207e-2_num*a**2+0.101403742282107e-3_num*a**3
+    !ELSE IF (a > 12.97_num .AND. a < 22.59_num) THEN
+      !calc_switching2 = &
+        !0.609014168122852_num+0.367237920294194e-1_num*a &
+        !-0.145732356052247e-2_num*a**2+0.207305941973063e-4_num*a**3
+    !ELSE IF (a > 22.59_num .AND. a < 29.41_num) THEN
+      !calc_switching2 = &
+        !0.852464153339503_num+0.439311670189453e-2_num*a &
+        !-0.261294335846660e-4_num*a**2-3.87808147946726e-7_num*a**3
+    !ELSE IF (a < 29.41_num) THEN
+      !calc_switching2 = &
+        !0.816478868872687_num+0.806383596073046e-2_num*a &
+        !-0.150941377101699e-3_num*a**2+0.102681208912720e-5_num*a**3
+    !ELSE
+      !calc_switching2 = 1.0_num
+    !END IF
 
     ! Ensure switching stays between 0 & 1
     calc_switching2 = MIN(calc_switching2, 1.0_num)
