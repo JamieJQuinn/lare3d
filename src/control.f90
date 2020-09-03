@@ -66,21 +66,21 @@ CONTAINS
     !nz_global = 128
 
     ! Mid res
-    nx_global = 256
-    ny_global = 256
-    nz_global = 256
+    !nx_global = 256
+    !ny_global = 256
+    !nz_global = 256
 
     ! High res
-    !nx_global = 512
-    !ny_global = 512
-    !nz_global = 512
+    nx_global = 512
+    ny_global = 512
+    nz_global = 512
 
     ! Set the maximum number of iterations of the core solver before the code
     ! terminates. If nsteps < 0 then the code will run until t = t_end
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 30.0_num
+    t_end = 50.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -203,8 +203,8 @@ CONTAINS
     brag_alpha = 1.201632375e-4_num/RHO0
     switching_param = 150
 
-    twisting_velocity = 0.5_num
-    ramp_time = 0.25_num
+    twisting_velocity = 0.15_num
+    ramp_time = 1.0_num
   END SUBROUTINE control_variables
 
 
@@ -219,7 +219,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 2.0_num
+    dt_snapshots = 5.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
@@ -258,7 +258,7 @@ CONTAINS
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
     dump_mask(14:16) = .FALSE.
-    dump_mask(22:25) = .TRUE.
+    dump_mask(20:21) = .TRUE.
 
   END SUBROUTINE set_output_dumps
 
