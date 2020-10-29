@@ -161,6 +161,12 @@ DEFINES := $(DEFINE)
 # Uncomment to enable parallel-isotropic switching viscosity model
 #DEFINES += $(D)SWITCHING_VISCOSITY
 
+# Uncomment ONE of the below to set the switching function for
+# the switching model of viscosity
+#DEFINES += $(D)VON_MISES_SWITCHING_FUNCTION
+DEFINES += $(D)PARALLEL_SWITCHING_FUNCTION
+#DEFINES += $(D)ISOTROPIC_SWITCHING_FUNCTION
+
 
 # --------------------------------------------------
 # Shouldn't need to touch below here
