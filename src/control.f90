@@ -80,7 +80,7 @@ CONTAINS
     nsteps = -1
 
     ! The maximum runtime of the code
-    t_end = 50.0_num
+    t_end = 100.0_num
 
     ! Shock viscosities as detailed in manual - they are dimensionless
     visc1 = 0.0_num
@@ -109,8 +109,8 @@ CONTAINS
     y_stretch = .FALSE.
 
     ! The length of the domain in the z direction
-    z_min = -2.0_num
-    z_max =  2.0_num
+    z_min = -10.0_num
+    z_max =  10.0_num
     ! Should the z grid be stretched or uniform
     z_stretch = .FALSE.
 
@@ -204,7 +204,7 @@ CONTAINS
     switching_param = 150
 
     twisting_velocity = 0.15_num
-    ramp_time = 1.0_num
+    ramp_time = 2.0_num
   END SUBROUTINE control_variables
 
 
@@ -219,7 +219,7 @@ CONTAINS
     data_dir = 'Data'
 
     ! The interval between output snapshots.
-    dt_snapshots = 5.0_num
+    dt_snapshots = 2.0_num
 
     ! dump_mask is an array which specifies which quantities the code should
     ! output to disk in a data dump.
