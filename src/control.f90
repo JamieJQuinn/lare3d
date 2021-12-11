@@ -60,16 +60,6 @@ CONTAINS
 
     ! Set the number of gridpoints in x and y directions
 
-    ! Low res
-    !nx_global = 128
-    !ny_global = 128
-    !nz_global = 128
-
-    ! Mid res
-    !nx_global = 256
-    !ny_global = 256
-    !nz_global = 256
-
     ! High res
     nx_global = 512
     ny_global = 512
@@ -258,7 +248,7 @@ CONTAINS
     IF (cowling_resistivity) dump_mask(15) = .TRUE.
     IF (resistive_mhd) dump_mask(16) = .TRUE.
     dump_mask(14:16) = .FALSE.
-    dump_mask(20:21) = .TRUE.
+    dump_mask(20:21) = .FALSE.
 
   END SUBROUTINE set_output_dumps
 
